@@ -617,21 +617,28 @@ function hashPass(p){let h=0;for(let i=0;i<p.length;i++)h=(Math.imul(31,h)+p.cha
 function showRegister(){document.getElementById('loginCard').style.display='none';document.getElementById('registerCard').style.display='block';}
 function showLogin(){document.getElementById('loginCard').style.display='block';document.getElementById('registerCard').style.display='none';}
 
-function register(){
+async function register(){
   const name=document.getElementById('regName').value.trim();
   const pass=document.getElementById('regPass').value;
   const err=document.getElementById('registerError');err.textContent='';
   if(!name||!pass){err.textContent='Please enter a name and password.';return;}
   if(pass.length<4){err.textContent='Password must be at least 4 characters.';return;}
+  // Sync from bin first to get latest users before checking if name is taken
+  await loadBin();
   if(state.users[name.toLowerCase()]){err.textContent='That name is already taken.';return;}
   state.users[name.toLowerCase()]={name,hash:hashPass(pass)};
-  state.currentUser=name;saveLocal();saveData();loginSuccess();
+  state.currentUser=name;
+  saveLocal();
+  await saveData();
+  loginSuccess();
 }
-function login(){
+async function login(){
   const name=document.getElementById('loginName').value.trim();
   const pass=document.getElementById('loginPass').value;
   const err=document.getElementById('loginError');err.textContent='';
   if(!name||!pass){err.textContent='Enter your name and password.';return;}
+  // Sync from bin to get latest users
+  await loadBin();
   const user=state.users[name.toLowerCase()];
   if(!user){err.textContent='Name not found. Please register first.';return;}
   if(user.hash!==hashPass(pass)){err.textContent='Wrong password.';return;}
@@ -642,10 +649,6 @@ function loginSuccess(){
   document.getElementById('loginScreen').classList.remove('active');
   document.getElementById('bottomNav').style.display='flex';
   goTo('home');
-  // Sync from bin in background to get latest data from other user
-  loadBin().then(synced=>{
-    if(synced) renderHome();
-  });
 }
 function logout(){
   state.currentUser=null;saveLocal();
@@ -1340,15 +1343,12 @@ function showEmailActionResult(action, session){
 emailjs.init(EMAILJS_PUBLIC_KEY);
 checkEmailAction();
 if(!document.body.innerHTML.includes("Open app")){
-  loadLocal(); // load local cache immediately so UI can start
-  loadBin().then(()=>{
-    // Bin loaded — re-check login
-    if(state.currentUser) loginSuccess();
-    else if(state.currentUser===null){
-      // already on login screen, nothing to do
-    }
-  });
-  if(state.currentUser) loginSuccess();
+  loadLocal();
+  if(state.currentUser){
+    loginSuccess();
+    // Sync in background after login
+    loadBin().then(synced=>{ if(synced) renderHome(); });
+  }
 }
 </script>
 </body>
