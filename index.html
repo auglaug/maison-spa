@@ -541,8 +541,11 @@ function getIcon(svc){
 let state={
   currentUser:null,
   users:{
-    'majken':  {name:'Majken',  hash:'hhvxpsz', email:'majken.helen@gmail.com'},
-    'rønnaug': {name:'Rønnaug', hash:'hhvxpsz', email:'ronnaugsk@gmail.com'},
+    'majken':   {name:'Majken',  hash:'hhvxpsz', email:'majken.helen@gmail.com'},
+    'rønnaug':  {name:'Rønnaug', hash:'hhvxpsz', email:'ronnaugsk@gmail.com'},
+    'rønnaug':  {name:'Rønnaug', hash:'hhvxpsz', email:'ronnaugsk@gmail.com'},
+    'ronnaug':  {name:'Rønnaug', hash:'hhvxpsz', email:'ronnaugsk@gmail.com'},
+    'rönnau':   {name:'Rønnaug', hash:'hhvxpsz', email:'ronnaugsk@gmail.com'},
   },
   sessions:[],services:[],addons:[],ambiance:[]
 };
@@ -628,13 +631,18 @@ async function login(){
   const pass=document.getElementById('loginPass').value;
   const err=document.getElementById('loginError');err.textContent='';
   if(!name||!pass){err.textContent='Enter your name and password.';return;}
-  const user=state.users[name.toLowerCase()];
+  // Normalize: try exact, then without special chars
+  const nameLower = name.toLowerCase().trim();
+  const nameNorm = nameLower.replace(/[øö]/g,'o').replace(/[æ]/g,'ae').replace(/[å]/g,'a');
+  const user = state.users[nameLower] || state.users[nameNorm] ||
+    Object.values(state.users).find(u=>u.name.toLowerCase()===nameLower) ||
+    Object.values(state.users).find(u=>u.name.toLowerCase().replace(/[øö]/g,'o').replace(/[æ]/g,'ae').replace(/[å]/g,'a')===nameNorm);
   if(!user){err.textContent='Please enter Majken or Rønnaug.';return;}
   if(user.hash!==hashPass(pass)){err.textContent='Wrong password. Try: maison';return;}
   err.textContent='Syncing…';
   try{ await loadBin(); }catch(e){ console.warn('Bin sync failed, using local'); }
   err.textContent='';
-  state.currentUser=user.name;saveLocal();loginSuccess();
+  state.currentUser=user.name; saveLocal(); loginSuccess();
 }
 function loginSuccess(){
   showToast('Bienvenue, '+state.currentUser+' ✦');
