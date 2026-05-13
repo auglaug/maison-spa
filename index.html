@@ -465,6 +465,9 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 
 <script>
 const STORAGE_KEY='maisonspa_v3';
+const JSONBIN_ID  = '6a050720c0954111d81d3aa2';
+const JSONBIN_KEY = '$2a$10$g.t1puNB5zwKfBP0n.kapuUhoYvLxWCY.YYsX78.1U/OtBQocy.re';
+const JSONBIN_URL = 'https://api.jsonbin.io/v3/b/' + JSONBIN_ID;
 
 const DEFAULT_SERVICES=[
   {id:'s1',name:'Hunchback of Home Office Recovery',duration:'45 min',category:'The Body & Soul Collection',description:'A targeted deep-tissue neck and shoulder massage designed to undo the structural damage of poor ergonomics and endless video calls. Includes use of essential oils for elevated relaxation.',addons:['XA','XB','XC','XD','XE','XF','XG','XH']},
@@ -547,31 +550,65 @@ let state={currentUser:null,users:{},sessions:[],services:[],addons:[],ambiance:
 let booking={client:null,therapist:null,serviceId:null,addonSel:{},ambianceSel:[]};
 let pendingSession=null,ratingValue=0,tempSubs=[];
 
+function getPayload(){
+  return {
+    users:state.users,
+    sessions:state.sessions,
+    services:state.services,
+    addons:state.addons,
+    ambiance:state.ambiance
+  };
+}
 function saveLocal(){
-  localStorage.setItem(STORAGE_KEY,JSON.stringify({
-    users:state.users,currentUser:state.currentUser,
-    sessions:state.sessions,services:state.services,
-    addons:state.addons,ambiance:state.ambiance
-  }));
+  localStorage.setItem(STORAGE_KEY,JSON.stringify({...getPayload(),currentUser:state.currentUser}));
+}
+async function saveBin(){
+  try{
+    await fetch(JSONBIN_URL,{
+      method:'PUT',
+      headers:{'Content-Type':'application/json','X-Master-Key':JSONBIN_KEY,'X-Bin-Versioning':'false'},
+      body:JSON.stringify(getPayload())
+    });
+  }catch(e){console.warn('JSONBin save failed:',e);}
+}
+async function saveData(){
+  saveLocal();
+  await saveBin();
+}
+function applyData(d){
+  if(d.users) state.users=d.users;
+  if(d.sessions) state.sessions=d.sessions;
+  let svcs=d.services&&d.services.length?d.services:null;
+  if(svcs) svcs=svcs.map(s=>({...s,category:s.category==='Maison Spa Club'?'Maison Spa Club member specials':s.category}));
+  state.services=svcs||JSON.parse(JSON.stringify(DEFAULT_SERVICES));
+  state.addons=d.addons&&d.addons.length?d.addons:JSON.parse(JSON.stringify(DEFAULT_ADDONS));
+  state.ambiance=d.ambiance&&d.ambiance.length?d.ambiance:JSON.parse(JSON.stringify(DEFAULT_AMBIANCE));
 }
 function loadLocal(){
   try{
     const d=JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}');
-    state.users=d.users||{};
     state.currentUser=d.currentUser||null;
-    state.sessions=d.sessions||[];
-    // Migrate old category name if needed
-    let svcs=d.services&&d.services.length?d.services:null;
-    if(svcs){
-      svcs=svcs.map(s=>({...s,category:s.category==='Maison Spa Club'?'Maison Spa Club member specials':s.category}));
-    }
-    state.services=svcs||JSON.parse(JSON.stringify(DEFAULT_SERVICES));
-    state.addons=d.addons&&d.addons.length?d.addons:JSON.parse(JSON.stringify(DEFAULT_ADDONS));
-    state.ambiance=d.ambiance&&d.ambiance.length?d.ambiance:JSON.parse(JSON.stringify(DEFAULT_AMBIANCE));
+    applyData(d);
   }catch(e){
     state.services=JSON.parse(JSON.stringify(DEFAULT_SERVICES));
     state.addons=JSON.parse(JSON.stringify(DEFAULT_ADDONS));
     state.ambiance=JSON.parse(JSON.stringify(DEFAULT_AMBIANCE));
+  }
+}
+async function loadBin(){
+  try{
+    const r=await fetch(JSONBIN_URL+'/latest',{headers:{'X-Master-Key':JSONBIN_KEY}});
+    if(!r.ok) return false;
+    const j=await r.json();
+    applyData(j.record);
+    // Keep currentUser from localStorage
+    const local=JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}');
+    state.currentUser=local.currentUser||null;
+    saveLocal(); // sync bin data to local cache
+    return true;
+  }catch(e){
+    console.warn('JSONBin load failed, using local cache');
+    return false;
   }
 }
 
@@ -588,7 +625,7 @@ function register(){
   if(pass.length<4){err.textContent='Password must be at least 4 characters.';return;}
   if(state.users[name.toLowerCase()]){err.textContent='That name is already taken.';return;}
   state.users[name.toLowerCase()]={name,hash:hashPass(pass)};
-  state.currentUser=name;saveLocal();loginSuccess();
+  state.currentUser=name;saveLocal();saveData();loginSuccess();
 }
 function login(){
   const name=document.getElementById('loginName').value.trim();
@@ -605,6 +642,10 @@ function loginSuccess(){
   document.getElementById('loginScreen').classList.remove('active');
   document.getElementById('bottomNav').style.display='flex';
   goTo('home');
+  // Sync from bin in background to get latest data from other user
+  loadBin().then(synced=>{
+    if(synced) renderHome();
+  });
 }
 function logout(){
   state.currentUser=null;saveLocal();
@@ -860,7 +901,7 @@ function confirmFromReview(){
   state.sessions.push(session);
   pendingSession=null;
   booking={client:state.currentUser,therapist:null,serviceId:null,addonSel:{},ambianceSel:[]};
-  saveLocal();
+  saveData();
   showToast('Sending request to '+session.therapist+' ✦');
   sendBookingEmail(session).then(()=>{
     showToast('Request sent to '+session.therapist+' ✦');
@@ -884,7 +925,7 @@ function submitRating(){
     if(s){s.rating=ratingValue;s.notes=notes;}
     ratingSessionId=null;
     document.getElementById('ratingModal').classList.remove('open');
-    saveLocal();showToast('Rating saved ✦');renderHistory();
+    saveData().then(()=>renderHistory());showToast('Rating saved ✦');
   }
 }
 
@@ -1005,7 +1046,7 @@ function saveTreatment(){
   if(!name){showToast('Please enter a name');return;}
   const addons=[...document.querySelectorAll('.cb-item.checked')].map(el=>el.dataset.id);
   state.services.push({id:'svc_'+Date.now(),name,duration:document.getElementById('ftDuration').value.trim()||'30 min',category:document.getElementById('ftCat').value,description:document.getElementById('ftDesc').value.trim(),addons});
-  saveLocal();closeForm();renderAdminTreatments();showToast('Treatment added ✦');
+  saveData();closeForm();renderAdminTreatments();showToast('Treatment added ✦');
 }
 
 // ── ADMIN: ADD-ONS ────────────────────────────────────────────────────────────
@@ -1020,7 +1061,7 @@ function renderAdminAddons(){
       <button class="admin-del" onclick="deleteAddon(${i})">✕</button>
     </div>`).join('');
 }
-function deleteAddon(i){state.addons.splice(i,1);saveLocal();renderAdminAddons();showToast('Add-on removed ✦');}
+function deleteAddon(i){state.addons.splice(i,1);saveData();renderAdminAddons();showToast('Add-on removed ✦');}
 function openAddAddon(){
   tempSubs=[];
   document.getElementById('formSheet').innerHTML=`
@@ -1059,7 +1100,7 @@ function saveAddon(){
   const name=document.getElementById('faName').value.trim();
   if(!name){showToast('Please enter a name');return;}
   state.addons.push({id:'X_'+Date.now(),name,desc:document.getElementById('faDesc').value.trim(),subs:[...tempSubs]});
-  saveLocal();closeForm();renderAdminAddons();showToast('Add-on added ✦');
+  saveData();closeForm();renderAdminAddons();showToast('Add-on added ✦');
 }
 
 // ── ADMIN: AMBIANCE ───────────────────────────────────────────────────────────
@@ -1070,7 +1111,7 @@ function renderAdminAmbiance(){
       <button class="admin-del" onclick="deleteAmbiance(${i})">✕</button>
     </div>`).join('');
 }
-function deleteAmbiance(i){state.ambiance.splice(i,1);saveLocal();renderAdminAmbiance();showToast('Removed ✦');}
+function deleteAmbiance(i){state.ambiance.splice(i,1);saveData();renderAdminAmbiance();showToast('Removed ✦');}
 function openAddAmbiance(){
   document.getElementById('formSheet').innerHTML=`
     <div class="sheet-handle"></div>
@@ -1086,7 +1127,7 @@ function saveAmbiance(){
   const name=document.getElementById('fambName').value.trim();
   if(!name){showToast('Please enter a name');return;}
   state.ambiance.push({id:'Z_'+Date.now(),name});
-  saveLocal();closeForm();renderAdminAmbiance();showToast('Option added ✦');
+  saveData();closeForm();renderAdminAmbiance();showToast('Option added ✦');
 }
 
 function closeForm(){document.getElementById('formModal').classList.remove('open');}
@@ -1257,12 +1298,12 @@ function checkEmailAction(){
 
   if(action==='confirm'){
     s.status='confirmed';
-    saveLocal();
+    saveData();
     sendResponseEmail(s, true).catch(console.error);
     showEmailActionResult('confirmed', s);
   } else if(action==='decline'){
     s.status='declined';
-    saveLocal();
+    saveData();
     sendResponseEmail(s, false).catch(console.error);
     showEmailActionResult('declined', s);
   }
@@ -1299,8 +1340,15 @@ function showEmailActionResult(action, session){
 emailjs.init(EMAILJS_PUBLIC_KEY);
 checkEmailAction();
 if(!document.body.innerHTML.includes("Open app")){
-  loadLocal();
-  if(state.currentUser)loginSuccess();
+  loadLocal(); // load local cache immediately so UI can start
+  loadBin().then(()=>{
+    // Bin loaded — re-check login
+    if(state.currentUser) loginSuccess();
+    else if(state.currentUser===null){
+      // already on login screen, nothing to do
+    }
+  });
+  if(state.currentUser) loginSuccess();
 }
 </script>
 </body>
