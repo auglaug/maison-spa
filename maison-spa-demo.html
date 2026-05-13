@@ -1,0 +1,1307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Maison · Spa</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--ivory:#F9F5EE;--ivory-2:#F2EDE4;--ivory-3:#E8E0D4;--parchment:#DDD4C4;--cognac:#8B4A2A;--cognac-2:#6B3820;--champagne:#C9A96E;--champagne-2:#B8923A;--text:#2A1F14;--text-2:#6B5040;--text-3:#9A8070;--white:#FFFFFF;--r:16px;--r-sm:8px;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Jost',sans-serif;background:var(--ivory);color:var(--text);min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 70% 50% at 15% 5%,rgba(201,169,110,0.08) 0%,transparent 60%),radial-gradient(ellipse 50% 70% at 85% 90%,rgba(139,74,42,0.06) 0%,transparent 60%);pointer-events:none;z-index:0;}
+.app{position:relative;z-index:1;max-width:420px;margin:0 auto;min-height:100vh;}
+.screen{display:none;padding:0 0 100px;animation:fadeUp .3s ease;}
+.screen.active{display:block;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+/* LOGIN */
+#loginScreen{padding:2rem;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;}
+#loginScreen.active{display:flex;}
+.login-wordmark{font-family:'Cormorant Garamond',serif;font-size:44px;font-weight:300;color:var(--text);letter-spacing:0.04em;margin-bottom:4px;}
+.login-wordmark span{color:var(--cognac);}
+.login-rule{display:flex;align-items:center;gap:10px;margin-bottom:6px;}
+.login-rule-line{flex:1;height:0.5px;background:var(--parchment);}
+.login-rule-orn{font-size:10px;color:var(--champagne);font-family:'Cormorant Garamond',serif;letter-spacing:0.2em;}
+.login-tagline{font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-3);margin-bottom:44px;}
+.login-card{background:rgba(255,255,255,0.6);border:0.5px solid var(--parchment);border-radius:var(--r);padding:32px;width:100%;max-width:340px;}
+.login-card h2{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:300;color:var(--text);margin-bottom:24px;}
+.field{margin-bottom:16px;}
+.field label{font-size:10px;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-3);display:block;margin-bottom:6px;}
+.field input,.field textarea,.field select{width:100%;padding:12px 14px;border:0.5px solid var(--parchment);border-radius:var(--r-sm);font-family:'Jost',sans-serif;font-size:14px;font-weight:300;background:var(--white);color:var(--text);outline:none;transition:border-color .2s;}
+.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--champagne);}
+.field textarea{resize:vertical;min-height:72px;}
+.btn-primary{width:100%;padding:14px;background:var(--cognac);color:var(--ivory);border:none;border-radius:var(--r-sm);font-family:'Jost',sans-serif;font-size:12px;font-weight:400;letter-spacing:0.14em;text-transform:uppercase;cursor:pointer;transition:background .2s;margin-top:8px;}
+.btn-primary:hover{background:var(--cognac-2);}
+.login-switch{font-size:12px;color:var(--text-3);text-align:center;margin-top:18px;}
+.login-switch a{color:var(--cognac);cursor:pointer;}
+.error-msg{font-size:12px;color:#a04030;text-align:center;margin-top:8px;min-height:16px;}
+
+/* TOP BAR */
+.topbar{padding:18px 22px 0;display:flex;align-items:center;justify-content:space-between;}
+.topbar-logo{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;color:var(--text);letter-spacing:0.04em;}
+.topbar-logo span{color:var(--cognac);}
+.topbar-right{display:flex;align-items:center;gap:10px;}
+.topbar-greeting{font-size:11px;color:var(--text-3);letter-spacing:0.04em;}
+.avatar{width:32px;height:32px;border-radius:50%;background:var(--ivory-3);border:0.5px solid var(--parchment);display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--text-2);cursor:pointer;font-family:'Cormorant Garamond',serif;}
+
+/* BOTTOM NAV */
+.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:420px;background:rgba(249,245,238,0.96);backdrop-filter:blur(16px);border-top:0.5px solid var(--parchment);display:flex;z-index:100;}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;padding:10px 0 14px;cursor:pointer;color:var(--parchment);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;transition:color .15s;font-family:'Jost',sans-serif;}
+.nav-item.active{color:var(--cognac);}
+.nav-indicator{width:16px;height:1px;background:currentColor;margin:0 auto 5px;opacity:0;}
+.nav-item.active .nav-indicator{opacity:1;}
+
+/* HOME */
+.home-hero{margin:18px 22px 0;background:var(--cognac);border-radius:var(--r);padding:26px 24px 22px;color:var(--ivory);position:relative;overflow:hidden;}
+.home-hero::before{content:'✦';position:absolute;right:22px;top:18px;font-family:'Cormorant Garamond',serif;font-size:52px;color:rgba(201,169,110,0.18);line-height:1;pointer-events:none;}
+.hero-eyebrow{font-size:9px;letter-spacing:0.16em;text-transform:uppercase;color:var(--champagne);margin-bottom:10px;}
+.hero-turn{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:300;line-height:1.15;margin-bottom:4px;}
+.hero-turn em{font-style:italic;}
+.hero-sub{font-size:11px;color:rgba(249,245,238,0.65);font-weight:300;}
+.hero-divider{display:flex;align-items:center;gap:10px;margin:16px 0 12px;}
+.hero-div-line{flex:1;height:0.5px;background:rgba(201,169,110,0.3);}
+.hero-div-orn{font-size:10px;color:rgba(201,169,110,0.6);font-family:'Cormorant Garamond',serif;}
+.hero-meta{display:flex;gap:20px;}
+.hero-meta-item{font-size:10px;color:rgba(249,245,238,0.55);letter-spacing:0.06em;}
+.hero-meta-item span{color:var(--champagne);}
+.section-head{display:flex;align-items:center;justify-content:space-between;padding:0 22px;margin:24px 0 12px;}
+.section-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;color:var(--text);}
+.section-link{font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--cognac);cursor:pointer;}
+.stats-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;padding:0 22px;margin-top:20px;}
+.stat-card{background:var(--ivory-2);border-radius:var(--r-sm);padding:14px 10px;text-align:center;}
+.stat-num{font-family:'Cormorant Garamond',serif;font-size:26px;color:var(--text);}
+.stat-lbl{font-size:9px;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-3);margin-top:2px;}
+.recent-item{background:rgba(255,255,255,0.5);border:0.5px solid var(--ivory-3);border-radius:var(--r-sm);padding:14px 16px;margin:0 22px 10px;display:flex;align-items:center;gap:12px;}
+.ri-icon{width:36px;height:36px;border-radius:var(--r-sm);background:var(--ivory-2);display:flex;align-items:center;justify-content:center;flex-shrink:0;border:0.5px solid var(--parchment);}
+.ri-name{font-size:13px;color:var(--text);}
+.ri-meta{font-size:11px;color:var(--text-3);margin-top:1px;font-weight:300;}
+.ri-right{margin-left:auto;text-align:right;flex-shrink:0;}
+.ri-stars{color:var(--champagne-2);font-size:11px;}
+.ri-date{font-size:10px;color:var(--text-3);margin-top:2px;}
+.btn-book{width:calc(100% - 44px);margin:8px 22px 0;display:block;padding:15px;background:var(--cognac);border:none;border-radius:var(--r-sm);font-family:'Jost',sans-serif;font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--ivory);text-align:center;cursor:pointer;transition:background .2s;}
+.btn-book:hover{background:var(--cognac-2);}
+.ornament{display:flex;align-items:center;gap:10px;margin:20px 22px;}
+.orn-line{flex:1;height:0.5px;background:var(--parchment);}
+.orn-mark{font-size:11px;color:var(--champagne);font-family:'Cormorant Garamond',serif;}
+
+/* BOOK */
+.screen-title{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:300;padding:20px 22px 0;margin-bottom:22px;color:var(--text);}
+.screen-title em{font-style:italic;color:var(--cognac);}
+.book-pad{padding:0 22px;}
+.field-label{font-size:9px;text-transform:uppercase;letter-spacing:0.12em;color:var(--text-3);margin-bottom:10px;}
+.person-toggle{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:22px;}
+.ptoggle{padding:12px;border:0.5px solid var(--parchment);border-radius:var(--r-sm);background:var(--white);font-family:'Jost',sans-serif;font-size:13px;font-weight:300;cursor:pointer;text-align:center;transition:all .2s;color:var(--text-3);}
+.ptoggle.active{border-color:var(--champagne);background:rgba(201,169,110,0.08);color:var(--cognac);}
+.date-input{width:100%;padding:12px 14px;border:0.5px solid var(--parchment);border-radius:var(--r-sm);font-family:'Jost',sans-serif;font-size:13px;font-weight:300;background:var(--white);color:var(--text);outline:none;margin-bottom:22px;}
+.date-input:focus{border-color:var(--champagne);}
+
+/* COLLAPSIBLE TREATMENTS */
+.service-grid{display:flex;flex-direction:column;gap:0;margin-bottom:22px;}
+.cat-group{margin-bottom:10px;}
+.cat-header{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;cursor:pointer;border-radius:var(--r-sm);background:rgba(255,255,255,0.5);border:0.5px solid var(--ivory-3);transition:all .2s;user-select:none;}
+.cat-header:hover{border-color:var(--parchment);}
+.cat-header.open{border-color:var(--champagne);background:rgba(201,169,110,0.06);border-radius:var(--r-sm) var(--r-sm) 0 0;}
+.cat-title{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:300;font-style:italic;color:var(--text);}
+.cat-arrow{font-size:10px;color:var(--champagne-2);transition:transform .25s;}
+.cat-header.open .cat-arrow{transform:rotate(180deg);}
+.cat-body{display:none;border:0.5px solid var(--champagne);border-top:none;border-radius:0 0 var(--r-sm) var(--r-sm);overflow:hidden;}
+.cat-body.open{display:block;}
+.svc-item{background:rgba(255,255,255,0.5);border-bottom:0.5px solid var(--ivory-3);padding:14px 16px;display:flex;align-items:flex-start;gap:12px;cursor:pointer;transition:background .2s;}
+.svc-item:last-child{border-bottom:none;}
+.svc-item:hover{background:rgba(201,169,110,0.04);}
+.svc-item.selected{background:rgba(201,169,110,0.07);}
+.svc-emoji{width:36px;height:36px;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+.svc-info{flex:1;}
+.svc-name{font-size:13px;color:var(--text);font-weight:400;line-height:1.4;}
+.svc-duration{font-size:11px;color:var(--champagne-2);margin-top:2px;font-weight:300;letter-spacing:0.04em;}
+.svc-description{font-size:11px;color:var(--text-3);font-weight:300;line-height:1.6;margin-top:4px;}
+.svc-check{width:18px;height:18px;border-radius:50%;border:0.5px solid var(--parchment);display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;transition:all .2s;color:var(--white);margin-top:2px;}
+.svc-item.selected .svc-check{background:var(--champagne-2);border-color:var(--champagne-2);}
+
+/* ADD-ONS */
+.addon-section{margin-bottom:22px;}
+.addon-grid{display:flex;flex-direction:column;gap:6px;}
+.addon-item{background:rgba(255,255,255,0.4);border:0.5px solid var(--ivory-3);border-radius:var(--r-sm);padding:11px 14px;display:flex;align-items:flex-start;gap:10px;cursor:pointer;transition:all .2s;}
+.addon-item:hover{border-color:var(--parchment);}
+.addon-item.selected{border-color:var(--champagne);background:rgba(201,169,110,0.07);}
+.addon-check{width:16px;height:16px;border-radius:3px;border:0.5px solid var(--parchment);flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--white);transition:all .2s;}
+.addon-item.selected .addon-check{background:var(--champagne-2);border-color:var(--champagne-2);}
+.addon-name{font-size:13px;color:var(--text);font-weight:400;}
+.addon-desc{font-size:11px;color:var(--text-3);font-weight:300;margin-top:2px;line-height:1.5;}
+.addon-subs{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;margin-left:26px;}
+.addon-sub-item{font-size:11px;color:var(--text-3);padding:5px 12px;border:0.5px solid var(--ivory-3);border-radius:99px;cursor:pointer;background:rgba(255,255,255,0.5);transition:all .2s;}
+.addon-sub-item:hover{border-color:var(--parchment);}
+  .addon-sub-item.disabled{opacity:0.3;cursor:not-allowed;}
+.addon-sub-item.selected{background:rgba(201,169,110,0.1);border-color:var(--champagne);color:var(--cognac);}
+.addon-sub-desc{font-size:10px;color:var(--text-3);font-style:italic;margin-top:2px;margin-left:26px;margin-bottom:4px;}
+
+/* AMBIANCE */
+.ambiance-section{margin-bottom:22px;}
+.amb-limit-note{font-size:10px;color:var(--text-3);font-weight:300;margin-bottom:10px;letter-spacing:0.04em;}
+.amb-row{display:flex;flex-wrap:wrap;gap:7px;}
+.amb-pill{padding:7px 14px;border:0.5px solid var(--parchment);border-radius:99px;font-size:12px;font-weight:300;color:var(--text-3);cursor:pointer;background:rgba(255,255,255,0.5);transition:all .2s;}
+.amb-pill.active{background:rgba(201,169,110,0.1);border-color:var(--champagne);color:var(--cognac);}
+.amb-pill.disabled{opacity:0.35;cursor:not-allowed;}
+
+/* RATING MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(42,31,20,0.45);z-index:200;display:none;align-items:flex-end;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.rating-sheet{background:var(--ivory);border-radius:var(--r) var(--r) 0 0;padding:28px 24px 44px;width:100%;max-width:420px;animation:slideUp .3s ease;}
+@keyframes slideUp{from{transform:translateY(30px);opacity:0}to{transform:translateY(0);opacity:1}}
+.sheet-handle{width:32px;height:3px;background:var(--parchment);border-radius:2px;margin:0 auto 24px;}
+.sheet-title{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:300;margin-bottom:4px;color:var(--text);}
+.sheet-sub{font-size:12px;color:var(--text-3);margin-bottom:24px;font-weight:300;}
+.star-row{display:flex;gap:10px;margin-bottom:22px;}
+.star{font-size:34px;cursor:pointer;opacity:.2;transition:all .15s;filter:grayscale(1);}
+.star.lit{opacity:1;filter:none;}
+.notes-input{width:100%;padding:12px 14px;border:0.5px solid var(--parchment);border-radius:var(--r-sm);font-family:'Jost',sans-serif;font-size:13px;font-weight:300;background:var(--white);color:var(--text);outline:none;resize:none;height:76px;margin-bottom:20px;}
+.notes-input:focus{border-color:var(--champagne);}
+
+/* HISTORY */
+.history-list{padding:0 22px;}
+.hist-item{background:rgba(255,255,255,0.5);border:0.5px solid var(--ivory-3);border-radius:var(--r-sm);padding:16px;margin-bottom:10px;}
+.hist-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;}
+.hist-service{font-size:14px;color:var(--text);}
+.hist-date{font-size:11px;color:var(--text-3);font-weight:300;}
+.hist-people{font-size:12px;color:var(--text-3);font-weight:300;margin-bottom:6px;}
+.hist-stars{color:var(--champagne-2);font-size:13px;margin-bottom:4px;}
+.hist-note{font-family:'Cormorant Garamond',serif;font-size:14px;font-style:italic;color:var(--text-2);}
+.hist-chips{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px;}
+.hist-chip{font-size:10px;background:var(--ivory-2);color:var(--text-3);padding:3px 9px;border-radius:99px;font-weight:300;}
+.hist-chip.amb{background:rgba(139,74,42,0.07);color:var(--text-2);}
+.empty-state{text-align:center;padding:60px 20px;color:var(--text-3);}
+.empty-emoji{font-size:44px;display:block;margin-bottom:12px;}
+.empty-text{font-size:13px;font-weight:300;line-height:1.7;}
+
+/* SETTINGS */
+.settings-pad{padding:0 22px;}
+.config-section{margin-bottom:24px;}
+.config-label{font-size:9px;text-transform:uppercase;letter-spacing:0.12em;color:var(--text-3);margin-bottom:10px;}
+.config-card{background:rgba(255,255,255,0.5);border:0.5px solid var(--ivory-3);border-radius:var(--r-sm);padding:16px;}
+.config-info{font-size:12px;color:var(--text-3);font-weight:300;line-height:1.7;}
+.btn-logout{width:100%;padding:12px;background:none;border:0.5px solid var(--parchment);border-radius:var(--r-sm);font-family:'Jost',sans-serif;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-3);cursor:pointer;margin-top:8px;transition:all .2s;}
+.btn-logout:hover{border-color:var(--cognac);color:var(--cognac);}
+.admin-tiles{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.admin-tile{background:rgba(255,255,255,0.5);border:0.5px solid var(--ivory-3);border-radius:var(--r);padding:20px 16px;cursor:pointer;transition:all .2s;text-align:center;}
+.admin-tile:hover{border-color:var(--champagne);background:rgba(201,169,110,0.05);}
+.admin-tile-icon{font-size:28px;margin-bottom:8px;}
+.admin-tile-name{font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:300;color:var(--text);margin-bottom:3px;}
+.admin-tile-count{font-size:10px;color:var(--text-3);letter-spacing:0.06em;}
+
+/* ADMIN SCREENS */
+.admin-list{display:flex;flex-direction:column;gap:8px;margin-bottom:16px;}
+.admin-item{background:rgba(255,255,255,0.5);border:0.5px solid var(--ivory-3);border-radius:var(--r-sm);padding:13px 15px;display:flex;align-items:flex-start;gap:10px;}
+.admin-item-info{flex:1;}
+.admin-item-name{font-size:13px;color:var(--text);font-weight:400;}
+.admin-item-meta{font-size:11px;color:var(--text-3);font-weight:300;margin-top:2px;line-height:1.5;}
+.admin-del{background:none;border:none;color:var(--parchment);cursor:pointer;font-size:16px;padding:4px;flex-shrink:0;transition:color .15s;margin-top:2px;}
+.admin-del:hover{color:#a04030;}
+.btn-add-new{width:100%;padding:13px;background:none;border:0.5px solid var(--champagne);border-radius:var(--r-sm);font-family:'Jost',sans-serif;font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--cognac);cursor:pointer;margin-bottom:16px;transition:all .2s;}
+.btn-add-new:hover{background:rgba(201,169,110,0.08);}
+.back-btn{display:flex;align-items:center;gap:6px;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-3);cursor:pointer;padding:16px 22px 0;margin-bottom:-8px;}
+.back-btn:hover{color:var(--cognac);}
+
+/* FORM MODAL */
+.form-modal{position:fixed;inset:0;background:rgba(42,31,20,0.45);z-index:200;display:none;align-items:flex-end;justify-content:center;}
+.form-modal.open{display:flex;}
+.form-sheet{background:var(--ivory);border-radius:var(--r) var(--r) 0 0;padding:28px 24px 44px;width:100%;max-width:420px;max-height:90vh;overflow-y:auto;animation:slideUp .3s ease;}
+.form-sheet h3{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;color:var(--text);margin-bottom:20px;}
+.checkbox-list{display:flex;flex-direction:column;gap:7px;margin-top:6px;}
+.cb-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border:0.5px solid var(--ivory-3);border-radius:var(--r-sm);cursor:pointer;background:rgba(255,255,255,0.4);transition:all .2s;}
+.cb-item:hover{border-color:var(--parchment);}
+.cb-item.checked{border-color:var(--champagne);background:rgba(201,169,110,0.07);}
+.cb-box{width:16px;height:16px;border-radius:3px;border:0.5px solid var(--parchment);display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--white);flex-shrink:0;}
+.cb-item.checked .cb-box{background:var(--champagne-2);border-color:var(--champagne-2);}
+.cb-label{font-size:13px;color:var(--text);flex:1;}
+.sub-add-row{display:flex;gap:8px;margin-bottom:8px;}
+.sub-add-row input{flex:1;padding:9px 12px;border:0.5px solid var(--parchment);border-radius:var(--r-sm);font-family:'Jost',sans-serif;font-size:13px;background:var(--white);color:var(--text);outline:none;}
+.sub-add-row input:focus{border-color:var(--champagne);}
+.btn-small{padding:9px 14px;background:var(--cognac);color:var(--ivory);border:none;border-radius:var(--r-sm);font-family:'Jost',sans-serif;font-size:11px;cursor:pointer;white-space:nowrap;}
+.sub-chip-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;}
+.sub-chip{display:flex;align-items:center;gap:5px;padding:4px 10px;background:var(--ivory-2);border:0.5px solid var(--parchment);border-radius:99px;font-size:11px;color:var(--text-2);}
+.sub-chip button{background:none;border:none;color:var(--text-3);cursor:pointer;font-size:13px;line-height:1;padding:0;}
+.form-btn-row{display:flex;gap:10px;margin-top:4px;}
+.btn-cancel{flex:1;padding:13px;background:none;border:0.5px solid var(--parchment);border-radius:var(--r-sm);font-family:'Jost',sans-serif;font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-3);cursor:pointer;}
+.btn-save{flex:2;padding:13px;background:var(--cognac);color:var(--ivory);border:none;border-radius:var(--r-sm);font-family:'Jost',sans-serif;font-size:12px;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;}
+
+/* REVIEW + DETAIL MODALS */
+.review-sheet{background:var(--ivory);border-radius:var(--r) var(--r) 0 0;padding:28px 24px 44px;width:100%;max-width:420px;max-height:88vh;overflow-y:auto;animation:slideUp .3s ease;}
+.review-section{margin-bottom:14px;}
+.review-label{font-size:9px;text-transform:uppercase;letter-spacing:0.12em;color:var(--champagne-2);margin-bottom:5px;}
+.review-value{font-size:13px;color:var(--text);font-weight:300;line-height:1.6;}
+.review-chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:4px;}
+.review-chip{font-size:11px;background:var(--ivory-2);color:var(--text-2);padding:4px 10px;border-radius:99px;border:0.5px solid var(--ivory-3);}
+.review-chip.amb{background:rgba(139,74,42,0.07);color:var(--text-2);}
+.review-divider{height:0.5px;background:var(--parchment);margin:14px 0;}
+
+/* TOAST */
+.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:var(--cognac);color:var(--ivory);padding:11px 22px;border-radius:99px;font-size:12px;letter-spacing:0.06em;z-index:300;display:none;white-space:nowrap;}
+.toast.show{display:block;}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+</head>
+<body>
+
+<div class="toast" id="toast"></div>
+
+<!-- RATING MODAL -->
+<div class="modal-overlay" id="ratingModal">
+  <div class="rating-sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">How was it?</div>
+    <div class="sheet-sub" id="ratingSubtitle">Rate your session</div>
+    <div class="star-row">
+      <span class="star" data-v="1">⭐</span><span class="star" data-v="2">⭐</span>
+      <span class="star" data-v="3">⭐</span><span class="star" data-v="4">⭐</span>
+      <span class="star" data-v="5">⭐</span>
+    </div>
+    <textarea class="notes-input" id="ratingNotes" placeholder="Notes — oil used, pressure, what to repeat…"></textarea>
+    <button class="btn-primary" onclick="submitRating()">Save session</button>
+  </div>
+</div>
+
+<!-- REVIEW MODAL -->
+<div class="modal-overlay" id="reviewModal">
+  <div class="review-sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">Review your session</div>
+    <div id="reviewContent" style="margin-top:16px;"></div>
+    <div class="form-btn-row" style="margin-top:20px;">
+      <button class="btn-cancel" onclick="document.getElementById('reviewModal').classList.remove('open')">Edit</button>
+      <button class="btn-save" onclick="confirmFromReview()">Confirm ✦</button>
+    </div>
+  </div>
+</div>
+
+<!-- SESSION DETAIL MODAL -->
+<div class="modal-overlay" id="detailModal">
+  <div class="review-sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title" id="detailTitle">Session details</div>
+    <div id="detailContent" style="margin-top:16px;"></div>
+    <div style="margin-top:20px;">
+      <button class="btn-primary" onclick="document.getElementById('detailModal').classList.remove('open')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD FORM MODAL -->
+<div class="form-modal" id="formModal">
+  <div class="form-sheet" id="formSheet"></div>
+</div>
+
+<div class="app">
+
+  <!-- LOGIN -->
+  <div id="loginScreen" class="screen active">
+    <div style="margin-bottom:8px;"><svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="16" cy="16" r="14.5" stroke="#8B4A2A" stroke-width="0.8"/><path d="M8 22 L8 11 L16 18 L24 11 L24 22" stroke="#8B4A2A" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M11 22 L21 22" stroke="#C9A96E" stroke-width="0.7" stroke-linecap="round"/><path d="M16 8 L16 6" stroke="#C9A96E" stroke-width="0.8" stroke-linecap="round"/><path d="M13 7 Q16 5 19 7" stroke="#C9A96E" stroke-width="0.7" stroke-linecap="round" fill="none"/></svg></div>
+    <div class="login-wordmark">Maison<span> ·</span> Spa</div>
+    <div class="login-rule"><div class="login-rule-line"></div><div class="login-rule-orn">✦</div><div class="login-rule-line"></div></div>
+    <div class="login-tagline">Votre retraite privée</div>
+    <div class="login-card" id="loginCard">
+      <h2>Bienvenue</h2>
+      <div class="field"><label>Name</label><input type="text" id="loginName" placeholder="Emma or Jonas" autocomplete="username"></div>
+      <div class="field"><label>Password</label><input type="password" id="loginPass" placeholder="••••••••" autocomplete="current-password"></div>
+      <button class="btn-primary" onclick="login()">Enter</button>
+      <div class="error-msg" id="loginError"></div>
+      <div class="login-switch">No account? <a onclick="showRegister()">Create one</a></div>
+    </div>
+    <div class="login-card" id="registerCard" style="display:none;">
+      <h2>Create account</h2>
+      <div class="field"><label>Your name</label><input type="text" id="regName" placeholder="Emma or Jonas" autocomplete="username"></div>
+      <div class="field"><label>Password</label><input type="password" id="regPass" placeholder="Choose a password" autocomplete="new-password"></div>
+      <button class="btn-primary" onclick="register()">Create account</button>
+      <div class="error-msg" id="registerError"></div>
+      <div class="login-switch">Already have one? <a onclick="showLogin()">Sign in</a></div>
+      <div style="font-size:11px;color:var(--champagne);opacity:0.8;text-align:center;margin-top:14px;">Demo mode — data saved in this browser only</div>
+    </div>
+  </div>
+
+  <!-- HOME -->
+  <div id="homeScreen" class="screen">
+    <div class="topbar">
+      <div style="display:flex;align-items:center;gap:8px;"><svg width="22" height="22" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="14.5" stroke="#8B4A2A" stroke-width="0.8"/><path d="M8 22 L8 11 L16 18 L24 11 L24 22" stroke="#8B4A2A" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M11 22 L21 22" stroke="#C9A96E" stroke-width="0.7" stroke-linecap="round"/></svg><div class="topbar-logo">Maison<span> ·</span> Spa</div></div>
+      <div class="topbar-right">
+        <div class="topbar-greeting" id="homeGreeting"></div>
+        <div class="avatar" id="homeAvatar" onclick="goTo('settings')">E</div>
+      </div>
+    </div>
+    <div class="home-hero">
+      <div class="hero-eyebrow">This evening</div>
+      <div class="hero-turn" id="heroTurn">Emma's turn<br>to <em>relax</em></div>
+      <div class="hero-sub" id="heroSub">Jonas is your therapist tonight</div>
+      <div class="hero-divider"><div class="hero-div-line"></div><div class="hero-div-orn">✦</div><div class="hero-div-line"></div></div>
+      <div class="hero-meta">
+        <div class="hero-meta-item"><span id="streakNum">0</span> week streak</div>
+        <div class="hero-meta-item"><span id="sessionNum">0</span> sessions</div>
+      </div>
+    </div>
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-num" id="statTotal">0</div><div class="stat-lbl">Sessions</div></div>
+      <div class="stat-card"><div class="stat-num" id="statAvg">—</div><div class="stat-lbl">Rating</div></div>
+      <div class="stat-card"><div class="stat-num" id="statStreak">0</div><div class="stat-lbl">Streak</div></div>
+    </div>
+    <div class="section-head" style="margin-top:22px;">
+      <div class="section-title">Recent sessions</div>
+      <a class="section-link" onclick="goTo('history')">View all</a>
+    </div>
+    <div id="recentList"></div>
+    <div class="ornament"><div class="orn-line"></div><div class="orn-mark">✦</div><div class="orn-line"></div></div>
+    <button class="btn-book" onclick="goTo('book')">Reserve a session</button>
+  </div>
+
+  <!-- BOOK -->
+  <div id="bookScreen" class="screen">
+    <div class="screen-title" style="display:flex;align-items:center;gap:10px;"><svg width="20" height="20" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="14.5" stroke="#8B4A2A" stroke-width="0.8"/><path d="M8 22 L8 11 L16 18 L24 11 L24 22" stroke="#8B4A2A" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M11 22 L21 22" stroke="#C9A96E" stroke-width="0.7" stroke-linecap="round"/></svg><span>Reserve</span></div>
+    <div class="book-pad">
+      <div class="field-label">Who is relaxing?</div>
+      <div class="person-toggle" id="clientToggle"></div>
+      <div class="field-label">Who is the therapist?</div>
+      <div class="person-toggle" id="therapistToggle"></div>
+      <div class="field-label">Choose a treatment</div>
+      <div class="service-grid" id="serviceGrid"></div>
+      <div class="field-label">Date & time</div>
+      <input type="datetime-local" class="date-input" id="bookDate">
+      <div id="addonSection" style="display:none;">
+        <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:10px;"><div class="field-label" style="color:var(--champagne-2);margin-bottom:0;">Premium add-ons</div><div style="font-size:10px;color:var(--text-3);font-weight:300;">Max 3</div></div>
+        <div class="addon-grid" id="addonGrid"></div>
+        <div style="height:16px;"></div>
+      </div>
+      <div class="ambiance-section">
+        <div class="field-label">Ambiance</div>
+        <div class="amb-limit-note">Select up to three</div>
+        <div class="amb-row" id="ambianceRow"></div>
+        <div style="height:16px;"></div>
+      </div>
+      <button class="btn-book" style="width:100%;margin:0 0 16px;" onclick="bookSession()">Review choices & confirm</button>
+    </div>
+  </div>
+
+  <!-- HISTORY -->
+  <div id="historyScreen" class="screen">
+    <div class="screen-title" style="display:flex;align-items:center;gap:10px;"><svg width="20" height="20" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="14.5" stroke="#8B4A2A" stroke-width="0.8"/><path d="M8 22 L8 11 L16 18 L24 11 L24 22" stroke="#8B4A2A" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M11 22 L21 22" stroke="#C9A96E" stroke-width="0.7" stroke-linecap="round"/></svg><span>Journal</span></div>
+    <div class="history-list" id="historyList"></div>
+  </div>
+
+  <!-- SETTINGS -->
+  <div id="settingsScreen" class="screen">
+    <div class="screen-title" style="display:flex;align-items:center;gap:10px;"><svg width="20" height="20" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="14.5" stroke="#8B4A2A" stroke-width="0.8"/><path d="M8 22 L8 11 L16 18 L24 11 L24 22" stroke="#8B4A2A" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M11 22 L21 22" stroke="#C9A96E" stroke-width="0.7" stroke-linecap="round"/></svg><span>Settings</span></div>
+    <div class="settings-pad">
+      <div class="config-section">
+        <div class="config-label">Account</div>
+        <div class="config-card">
+          <div class="config-info">Signed in as <strong id="settingsName" style="color:var(--text);font-weight:400;">—</strong></div>
+          <button class="btn-logout" onclick="logout()">Sign out</button>
+        </div>
+      </div>
+      <div class="config-section">
+        <div class="config-label">Manage the menu</div>
+        <div class="admin-tiles">
+          <div class="admin-tile" onclick="goTo('adminTreatments')">
+            <div class="admin-tile-icon">💆</div>
+            <div class="admin-tile-name">Treatments</div>
+            <div class="admin-tile-count" id="tileCountTreatments">0 treatments</div>
+          </div>
+          <div class="admin-tile" onclick="goTo('adminAddons')">
+            <div class="admin-tile-icon">✦</div>
+            <div class="admin-tile-name">Add-ons</div>
+            <div class="admin-tile-count" id="tileCountAddons">0 add-ons</div>
+          </div>
+          <div class="admin-tile" onclick="goTo('adminAmbiance')">
+            <div class="admin-tile-icon">🕯️</div>
+            <div class="admin-tile-name">Ambiance</div>
+            <div class="admin-tile-count" id="tileCountAmbiance">0 options</div>
+          </div>
+        </div>
+      </div>
+      <div class="config-section" style="margin-top:16px;">
+        <div class="config-label">Storage</div>
+        <div class="config-card">
+          <div class="config-info">Demo mode — all data is saved in this browser only.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADMIN: TREATMENTS -->
+  <div id="adminTreatmentsScreen" class="screen">
+    <div class="back-btn" onclick="goTo('settings')">← Settings</div>
+    <div class="screen-title" style="display:flex;align-items:center;gap:10px;"><svg width="20" height="20" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="14.5" stroke="#8B4A2A" stroke-width="0.8"/><path d="M8 22 L8 11 L16 18 L24 11 L24 22" stroke="#8B4A2A" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M11 22 L21 22" stroke="#C9A96E" stroke-width="0.7" stroke-linecap="round"/></svg><span><em>Treatments</em></span></div>
+    <div style="padding:0 22px;">
+      <button class="btn-add-new" onclick="openAddTreatment()">+ Add a treatment</button>
+      <div class="admin-list" id="adminTreatmentList"></div>
+    </div>
+  </div>
+
+  <!-- ADMIN: ADD-ONS -->
+  <div id="adminAddonsScreen" class="screen">
+    <div class="back-btn" onclick="goTo('settings')">← Settings</div>
+    <div class="screen-title" style="display:flex;align-items:center;gap:10px;"><svg width="20" height="20" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="14.5" stroke="#8B4A2A" stroke-width="0.8"/><path d="M8 22 L8 11 L16 18 L24 11 L24 22" stroke="#8B4A2A" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M11 22 L21 22" stroke="#C9A96E" stroke-width="0.7" stroke-linecap="round"/></svg><span><em>Add-ons</em></span></div>
+    <div style="padding:0 22px;">
+      <button class="btn-add-new" onclick="openAddAddon()">+ Add an add-on</button>
+      <div class="admin-list" id="adminAddonList"></div>
+    </div>
+  </div>
+
+  <!-- ADMIN: AMBIANCE -->
+  <div id="adminAmbianceScreen" class="screen">
+    <div class="back-btn" onclick="goTo('settings')">← Settings</div>
+    <div class="screen-title" style="display:flex;align-items:center;gap:10px;"><svg width="20" height="20" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="14.5" stroke="#8B4A2A" stroke-width="0.8"/><path d="M8 22 L8 11 L16 18 L24 11 L24 22" stroke="#8B4A2A" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M11 22 L21 22" stroke="#C9A96E" stroke-width="0.7" stroke-linecap="round"/></svg><span><em>Ambiance</em></span></div>
+    <div style="padding:0 22px;">
+      <button class="btn-add-new" onclick="openAddAmbiance()">+ Add an option</button>
+      <div class="admin-list" id="adminAmbianceList"></div>
+    </div>
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <nav class="bottom-nav" id="bottomNav" style="display:none;">
+    <div class="nav-item active" onclick="goTo('home')" data-screen="home"><div class="nav-indicator"></div>Home</div>
+    <div class="nav-item" onclick="goTo('book')" data-screen="book"><div class="nav-indicator"></div>Reserve</div>
+    <div class="nav-item" onclick="goTo('history')" data-screen="history"><div class="nav-indicator"></div>Journal</div>
+    <div class="nav-item" onclick="goTo('settings')" data-screen="settings"><div class="nav-indicator"></div>Settings</div>
+  </nav>
+</div>
+
+<script>
+const STORAGE_KEY='maisonspa_v3';
+
+const DEFAULT_SERVICES=[
+  {id:'s1',name:'Hunchback of Home Office Recovery',duration:'45 min',category:'The Body & Soul Collection',description:'A targeted deep-tissue neck and shoulder massage designed to undo the structural damage of poor ergonomics and endless video calls. Includes use of essential oils for elevated relaxation.',addons:['XA','XB','XC','XD','XE','XF','XG','XH']},
+  {id:'s2',name:'The "Out of Range" Scalp Ritual',duration:'40 min',category:'The Body & Soul Collection',description:'Hydrating hair mask with a hypnotic scalp massage guaranteed to make you forget your passwords and unread notifications. Airplane mode for your brain.',addons:['XA']},
+  {id:'s3',name:'The "Grounding Force" Pedicure',duration:'50 min',category:'The Body & Soul Collection',description:'A warm botanical foot soak followed by a restorative massage. Perfect for feet that have braved the treacherous journey between the fridge and the sofa.',addons:['XD','XE','XG']},
+  {id:'s4',name:'"I Woke Up Like This" Facial',duration:'35 min',category:'The Glow-Up Department',description:'A luxurious mask treatment accompanied by chilled cucumber compresses. Restores your natural radiance, even if we both know the truth about your sleep schedule.',addons:[]},
+  {id:'s5',name:'Ex-Flake Foot Polish',duration:'40 min',category:'The Glow-Up Department',description:'A bespoke sugar scrub that leaves your skin so smooth you might actually slide out of your shoes.',addons:[]},
+  {id:'s6',name:'The "Midnight Oil" Intimacy Ritual',duration:'60 min',category:'Maison Spa Club member specials',description:'A specialized, slow-tempo massage using a high-sheen, edible massage oil. This treatment transitions seamlessly from therapeutic relaxation to private celebration.',addons:[]},
+];
+
+const DEFAULT_ADDONS=[
+  {id:'XA',name:'Silent Partner Protocol',desc:'The therapist legally waives the right to mention laundry, dinner plans, or household logistics for a full 60 minutes.',subs:[]},
+  {id:'XB',name:'Liquid Zen Hydration Station',desc:'A curated selection of chilled bubbles or artisan cucumber-infused water. Served strictly while you are in a horizontal position.',subs:[
+    {id:'XB1',name:'Herbal tea',desc:'',subs:[
+      {id:'XB1A',name:'Chamomile',desc:''},
+      {id:'XB1B',name:'Mint',desc:''},
+      {id:'XB1C',name:'Ginger',desc:''},
+    ]},
+    {id:'XB2',name:'Crémant',desc:''},
+    {id:'XB3',name:'Rosé',desc:''},
+    {id:'XB4',name:'Cucumber water',desc:''},
+    {id:'XB5',name:'Smoothie',desc:''},
+  ]},
+  {id:'XC',name:'Warm Hug Towel Service',desc:'Steamed towels delivered at peak relaxation. Like a hug, but at 40°C and significantly more professional.',subs:[]},
+  {id:'XD',name:'Glowrious You-Time',desc:'LED therapy',subs:[]},
+  {id:'XE',name:'Digital Detox',desc:'',subs:[]},
+  {id:'XF',name:'Under Eye Mask',desc:'',subs:[]},
+  {id:'XG',name:'Kuchisabishii — Lonely Mouth',desc:'',subs:[
+    {id:'XG1',name:'Fresh nibbles',desc:''},
+    {id:'XG2',name:'Sinful snack platter',desc:"Calories don't count at the spa"},
+  ]},
+  {id:'XH',name:'Essential Oils',desc:'',subs:[
+    {id:'XH1',name:'Lavender dream',desc:''},
+    {id:'XH2',name:'Eucalyptus tranquility',desc:''},
+    {id:'XH3',name:'Spa heaven',desc:''},
+    {id:'XH4',name:'Forest sanctuary',desc:''},
+    {id:'XH5',name:'Grapefruit & bergamot energy',desc:''},
+  ]},
+];
+
+const DEFAULT_AMBIANCE=[
+  {id:'ZA',name:'Lo-fi music'},
+  {id:'ZB',name:'Candles'},
+  {id:'ZC',name:'Dim lights'},
+  {id:'ZD',name:'Lavender pillow mist'},
+  {id:'ZE',name:'Cool towels'},
+];
+
+const CAT_ORDER=['The Body & Soul Collection','The Glow-Up Department','Maison Spa Club member specials'];
+
+const ICON_SVGS={
+  's1':`<svg width="36" height="36" viewBox="0 0 40 40" fill="none" stroke="#8C6E50" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"><path d="M20 34 C20 34 8 26 8 16 C8 10 13 6 20 6 C27 6 32 10 32 16 C32 26 20 34 20 34Z"/><path d="M20 34 L20 6" stroke="#BF9540" stroke-width="0.8"/><path d="M20 20 C20 20 13 16 13 11" stroke="#BF9540" stroke-width="0.8"/><path d="M20 20 C20 20 27 16 27 11" stroke="#BF9540" stroke-width="0.8"/></svg>`,
+  's2':`<svg width="36" height="36" viewBox="0 0 40 40" fill="none" stroke="#8C6E50" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"><path d="M6 20 C6 12 12 6 20 6 C28 6 34 12 34 20 C34 28 28 34 20 34 C12 34 6 28 6 20Z"/><path d="M13 20 C13 16 16 13 20 13 C24 13 27 16 27 20" stroke="#BF9540" stroke-width="0.8"/><path d="M20 6 L20 13 M20 27 L20 34" stroke="#BF9540" stroke-width="0.8"/></svg>`,
+  's3':`<svg width="36" height="36" viewBox="0 0 40 40" fill="none" stroke="#8C6E50" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"><path d="M20 8 C20 8 10 14 10 22 C10 30 14 35 20 35 C26 35 30 30 30 22 C30 14 20 8 20 8Z"/><path d="M14 20 Q20 17 26 20" stroke="#BF9540" stroke-width="0.8"/><path d="M13 25 Q20 22 27 25" stroke="#BF9540" stroke-width="0.8"/></svg>`,
+  's4':`<svg width="36" height="36" viewBox="0 0 40 40" fill="none" stroke="#8C6E50" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"><path d="M10 22 C10 14 14 8 20 8 C26 8 30 14 30 22"/><path d="M10 22 C10 30 14 36 20 36 C26 36 30 30 30 22" stroke-dasharray="2 3"/><path d="M15 22 Q20 19 25 22" stroke="#BF9540" stroke-width="0.8"/><path d="M15 26 Q20 23 25 26" stroke="#BF9540" stroke-width="0.8"/></svg>`,
+  's5':`<svg width="36" height="36" viewBox="0 0 40 40" fill="none" stroke="#8C6E50" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"><path d="M12 32 C12 24 16 14 20 10 C24 14 28 24 28 32"/><path d="M12 32 Q20 35 28 32"/><circle cx="20" cy="10" r="3" stroke="#BF9540" stroke-width="0.9"/></svg>`,
+  's6':`<svg width="36" height="36" viewBox="0 0 40 40" fill="none" stroke="#8C6E50" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"><path d="M8 28 C8 18 13 10 20 8 C27 10 32 18 32 28 L32 32 C32 34 26 36 20 36 C14 36 8 34 8 32Z"/><path d="M12 22 Q20 19 28 22" stroke="#BF9540" stroke-width="0.8"/><path d="M20 8 L20 4" stroke="#BF9540" stroke-width="0.8"/></svg>`,
+};
+
+// Pool of botanical outline SVGs for new/custom treatments
+const ICON_POOL = [
+  `<svg width="36" height="36" viewBox="0 0 40 40" fill="none" stroke="#8C6E50" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 C20 6 12 12 12 20 C12 28 16 34 20 36 C24 34 28 28 28 20 C28 12 20 6 20 6Z"/><path d="M20 36 L20 6" stroke="#BF9540" stroke-width="0.8"/><path d="M20 22 C17 18 13 17 10 18" stroke="#BF9540" stroke-width="0.8"/><path d="M20 22 C23 18 27 17 30 18" stroke="#BF9540" stroke-width="0.8"/></svg>`,
+  `<svg width="36" height="36" viewBox="0 0 40 40" fill="none" stroke="#8C6E50" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="20" cy="20" r="12"/><circle cx="20" cy="20" r="6" stroke="#BF9540" stroke-width="0.8"/><path d="M20 8 L20 5 M20 35 L20 32 M8 20 L5 20 M35 20 L32 20" stroke="#BF9540" stroke-width="0.8"/></svg>`,
+  `<svg width="36" height="36" viewBox="0 0 40 40" fill="none" stroke="#8C6E50" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"><path d="M20 34 C14 34 8 28 8 20 C8 12 14 8 20 8 C26 8 32 12 32 20"/><path d="M32 20 C32 26 28 32 22 34" stroke="#BF9540" stroke-width="0.8"/><path d="M14 20 Q20 15 26 20 Q20 25 14 20" stroke="#BF9540" stroke-width="0.8"/></svg>`,
+  `<svg width="36" height="36" viewBox="0 0 40 40" fill="none" stroke="#8C6E50" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"><path d="M10 30 C10 22 14 12 20 8 C26 12 30 22 30 30 L30 33 Q20 36 10 33 Z"/><path d="M20 8 L20 33" stroke="#BF9540" stroke-width="0.8"/></svg>`,
+  `<svg width="36" height="36" viewBox="0 0 40 40" fill="none" stroke="#8C6E50" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="20" cy="20" rx="12" ry="8"/><ellipse cx="20" cy="20" rx="6" ry="4" stroke="#BF9540" stroke-width="0.8"/><path d="M20 12 L20 6 M20 28 L20 34" stroke="#BF9540" stroke-width="0.8"/></svg>`,
+  `<svg width="36" height="36" viewBox="0 0 40 40" fill="none" stroke="#8C6E50" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"><path d="M20 8 C24 8 32 14 32 22 C32 30 26 34 20 34 C14 34 8 30 8 22 C8 14 16 8 20 8Z"/><path d="M16 20 Q20 16 24 20" stroke="#BF9540" stroke-width="0.8"/><path d="M16 24 Q20 28 24 24" stroke="#BF9540" stroke-width="0.8"/><path d="M20 8 L20 5" stroke="#BF9540" stroke-width="0.8"/></svg>`,
+];
+function getIcon(svc){
+  const svg=ICON_SVGS[svc.id];
+  if(svg) return `<span style="display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;">${svg}</span>`;
+  // For custom treatments, pick from pool based on a hash of the id
+  const poolIdx=svc.id.split('').reduce((a,c)=>a+c.charCodeAt(0),0)%ICON_POOL.length;
+  return `<span style="display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;">${ICON_POOL[poolIdx]}</span>`;
+}
+
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
+let state={currentUser:null,users:{},sessions:[],services:[],addons:[],ambiance:[]};
+let booking={client:null,therapist:null,serviceId:null,addonSel:{},ambianceSel:[]};
+let pendingSession=null,ratingValue=0,tempSubs=[];
+
+function saveLocal(){
+  localStorage.setItem(STORAGE_KEY,JSON.stringify({
+    users:state.users,currentUser:state.currentUser,
+    sessions:state.sessions,services:state.services,
+    addons:state.addons,ambiance:state.ambiance
+  }));
+}
+function loadLocal(){
+  try{
+    const d=JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}');
+    state.users=d.users||{};
+    state.currentUser=d.currentUser||null;
+    state.sessions=d.sessions||[];
+    // Migrate old category name if needed
+    let svcs=d.services&&d.services.length?d.services:null;
+    if(svcs){
+      svcs=svcs.map(s=>({...s,category:s.category==='Maison Spa Club'?'Maison Spa Club member specials':s.category}));
+    }
+    state.services=svcs||JSON.parse(JSON.stringify(DEFAULT_SERVICES));
+    state.addons=d.addons&&d.addons.length?d.addons:JSON.parse(JSON.stringify(DEFAULT_ADDONS));
+    state.ambiance=d.ambiance&&d.ambiance.length?d.ambiance:JSON.parse(JSON.stringify(DEFAULT_AMBIANCE));
+  }catch(e){
+    state.services=JSON.parse(JSON.stringify(DEFAULT_SERVICES));
+    state.addons=JSON.parse(JSON.stringify(DEFAULT_ADDONS));
+    state.ambiance=JSON.parse(JSON.stringify(DEFAULT_AMBIANCE));
+  }
+}
+
+// ── AUTH ──────────────────────────────────────────────────────────────────────
+function hashPass(p){let h=0;for(let i=0;i<p.length;i++)h=(Math.imul(31,h)+p.charCodeAt(i))|0;return'h'+Math.abs(h).toString(36);}
+function showRegister(){document.getElementById('loginCard').style.display='none';document.getElementById('registerCard').style.display='block';}
+function showLogin(){document.getElementById('loginCard').style.display='block';document.getElementById('registerCard').style.display='none';}
+
+function register(){
+  const name=document.getElementById('regName').value.trim();
+  const pass=document.getElementById('regPass').value;
+  const err=document.getElementById('registerError');err.textContent='';
+  if(!name||!pass){err.textContent='Please enter a name and password.';return;}
+  if(pass.length<4){err.textContent='Password must be at least 4 characters.';return;}
+  if(state.users[name.toLowerCase()]){err.textContent='That name is already taken.';return;}
+  state.users[name.toLowerCase()]={name,hash:hashPass(pass)};
+  state.currentUser=name;saveLocal();loginSuccess();
+}
+function login(){
+  const name=document.getElementById('loginName').value.trim();
+  const pass=document.getElementById('loginPass').value;
+  const err=document.getElementById('loginError');err.textContent='';
+  if(!name||!pass){err.textContent='Enter your name and password.';return;}
+  const user=state.users[name.toLowerCase()];
+  if(!user){err.textContent='Name not found. Please register first.';return;}
+  if(user.hash!==hashPass(pass)){err.textContent='Wrong password.';return;}
+  state.currentUser=name;saveLocal();loginSuccess();
+}
+function loginSuccess(){
+  showToast('Bienvenue, '+state.currentUser+' ✦');
+  document.getElementById('loginScreen').classList.remove('active');
+  document.getElementById('bottomNav').style.display='flex';
+  goTo('home');
+}
+function logout(){
+  state.currentUser=null;saveLocal();
+  document.getElementById('bottomNav').style.display='none';
+  ['home','book','history','settings','adminTreatments','adminAddons','adminAmbiance'].forEach(s=>document.getElementById(s+'Screen').classList.remove('active'));
+  document.getElementById('loginScreen').classList.add('active');showLogin();
+}
+
+// ── NAVIGATION ────────────────────────────────────────────────────────────────
+function goTo(s){
+  ['home','book','history','settings','adminTreatments','adminAddons','adminAmbiance'].forEach(x=>document.getElementById(x+'Screen').classList.remove('active'));
+  document.getElementById(s+'Screen').classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active',n.dataset.screen===s));
+  if(s==='home')renderHome();
+  if(s==='book')renderBook();
+  if(s==='history')renderHistory();
+  if(s==='settings')renderSettings();
+  if(s==='adminTreatments')renderAdminTreatments();
+  if(s==='adminAddons')renderAdminAddons();
+  if(s==='adminAmbiance')renderAdminAmbiance();
+}
+
+// ── HOME ──────────────────────────────────────────────────────────────────────
+function renderHome(){
+  const u=state.currentUser||'You';
+  const h=new Date().getHours();
+  document.getElementById('homeGreeting').textContent=(h<12?'Bonjour':h<18?'Bon après-midi':'Bonsoir')+', '+u;
+  document.getElementById('homeAvatar').textContent=u.charAt(0).toUpperCase();
+  const names=Object.values(state.users).map(x=>x.name);
+  let clientTurn=u;
+  if(state.sessions.length){const last=state.sessions[state.sessions.length-1];clientTurn=(last.client===u)?(names.find(n=>n!==u)||u):u;}
+  const therapistTurn=names.find(n=>n!==clientTurn)||clientTurn;
+  document.getElementById('heroTurn').innerHTML=clientTurn+"'s turn<br>to <em>relax</em>";
+  document.getElementById('heroSub').textContent=therapistTurn+' is your therapist tonight';
+  const streak=calcStreak();
+  document.getElementById('streakNum').textContent=streak;
+  document.getElementById('sessionNum').textContent=state.sessions.length;
+  document.getElementById('statTotal').textContent=state.sessions.length;
+  const rated=state.sessions.filter(s=>s.rating);
+  document.getElementById('statAvg').textContent=rated.length?(rated.reduce((a,s)=>a+s.rating,0)/rated.length).toFixed(1):'—';
+  document.getElementById('statStreak').textContent=streak;
+  const list=document.getElementById('recentList');
+  const recent=[...state.sessions].reverse().slice(0,3);
+  if(!recent.length){list.innerHTML='<div style="padding:0 22px;color:var(--text-3);font-size:13px;font-weight:300;">No sessions yet — reserve your first one.</div>';return;}
+  list.innerHTML=recent.map(s=>{
+    const svc=state.services.find(sv=>sv.id===s.serviceId)||{name:s.serviceName||'Session',id:''};
+    const stars=s.rating?'⭐'.repeat(s.rating):'';
+    const dateStr=s.date?new Date(s.date).toLocaleDateString('en-GB',{day:'numeric',month:'short'}):'';
+    return`<div class="recent-item"><div class="ri-icon">${getIcon(svc)}</div><div><div class="ri-name">${svc.name}</div><div class="ri-meta">${s.client} · ${s.therapist}</div></div><div class="ri-right"><div class="ri-stars">${stars}</div><div class="ri-date">${dateStr}</div></div></div>`;
+  }).join('');
+}
+function calcStreak(){
+  if(!state.sessions.length)return 0;
+  const weeks=new Set(state.sessions.map(s=>{if(!s.date)return null;const d=new Date(s.date),j=new Date(d.getFullYear(),0,1);return Math.ceil(((d-j)/86400000+j.getDay()+1)/7);}).filter(Boolean));
+  return weeks.size;
+}
+
+// ── BOOK ──────────────────────────────────────────────────────────────────────
+function renderBook(){
+  const names=Object.values(state.users).map(u=>u.name),me=state.currentUser;
+  const now=new Date();now.setMinutes(0,0,0);
+  document.getElementById('bookDate').value=now.toISOString().slice(0,16);
+  if(!booking.client)booking.client=me;
+  if(!booking.therapist&&names.length>1)booking.therapist=names.find(n=>n!==me)||names[0];
+  document.getElementById('clientToggle').innerHTML=names.map(n=>`<button class="ptoggle${booking.client===n?' active':''}" onclick="setBooking('client','${n}',this)">${n}</button>`).join('');
+  document.getElementById('therapistToggle').innerHTML=names.map(n=>`<button class="ptoggle${booking.therapist===n?' active':''}" onclick="setBooking('therapist','${n}',this)">${n}</button>`).join('');
+  const cats={};
+  state.services.forEach(s=>{const c=s.category||'Other';if(!cats[c])cats[c]=[];cats[c].push(s);});
+  const selCat=booking.serviceId?(state.services.find(s=>s.id===booking.serviceId)||{}).category:null;
+  document.getElementById('serviceGrid').innerHTML=CAT_ORDER.filter(c=>cats[c]).map((cat,ci)=>{
+    const open=cat===selCat||(!selCat&&ci===0);
+    return`<div class="cat-group">
+      <div class="cat-header${open?' open':''}" onclick="toggleCat(this)"><span class="cat-title">${cat}</span><span class="cat-arrow">▼</span></div>
+      <div class="cat-body${open?' open':''}">
+        ${(cats[cat]||[]).map(s=>`<div class="svc-item${booking.serviceId===s.id?' selected':''}" onclick="selectService('${s.id}',this)">
+          <div class="svc-emoji">${getIcon(s)}</div>
+          <div class="svc-info">
+            <div class="svc-name">${s.name}</div>
+            <div class="svc-duration">${s.duration}</div>
+            ${s.description?`<div class="svc-description">${s.description}</div>`:''}
+          </div>
+          <div class="svc-check" style="margin-top:2px;">${booking.serviceId===s.id?'✓':''}</div>
+        </div>`).join('')}
+      </div>
+    </div>`;
+  }).join('');
+  renderAddons();renderAmbiance();
+}
+function toggleCat(h){h.classList.toggle('open');h.nextElementSibling.classList.toggle('open');}
+function setBooking(f,v,el){booking[f]=v;el.closest('[id$="Toggle"]').querySelectorAll('.ptoggle').forEach(b=>b.classList.remove('active'));el.classList.add('active');}
+function selectService(id,el){
+  booking.serviceId=id;booking.addonSel={};
+  document.querySelectorAll('.svc-item').forEach(i=>{i.classList.remove('selected');i.querySelector('.svc-check').textContent='';});
+  el.classList.add('selected');el.querySelector('.svc-check').textContent='✓';
+  renderAddons();renderAmbiance();
+}
+
+// ── ADD-ONS ───────────────────────────────────────────────────────────────────
+function findAddon(id,list){for(const a of list){if(a.id===id)return a;if(a.subs){const f=findAddon(id,a.subs);if(f)return f;}}return null;}
+function clearSubs(subs){subs.forEach(s=>{delete booking.addonSel[s.id];if(s.subs)clearSubs(s.subs);});}
+
+function renderAddons(){
+  const svc=state.services.find(s=>s.id===booking.serviceId);
+  const sec=document.getElementById('addonSection');
+  if(!svc||!svc.addons||!svc.addons.length){sec.style.display='none';return;}
+  sec.style.display='block';
+  const grid=document.getElementById('addonGrid');
+  grid.innerHTML=svc.addons.map(aid=>{
+    const a=state.addons.find(x=>x.id===aid);if(!a)return'';
+    const sel=!!booking.addonSel[aid];
+    return`<div class="addon-item${sel?' selected':''}" data-addonid="${aid}">
+      <div class="addon-check">${sel?'✓':''}</div>
+      <div style="flex:1;">
+        <div class="addon-name">${a.name}</div>
+        ${a.desc?`<div class="addon-desc">${a.desc}</div>`:''}
+        ${sel&&a.subs&&a.subs.length?buildSubsHtml(a.subs,aid):''}
+      </div>
+    </div>`;
+  }).join('');
+  // Event delegation — one listener on the grid
+  grid.onclick=function(evt){
+    const addonEl=evt.target.closest('[data-addonid]');
+    const subEl=evt.target.closest('[data-subid]');
+    if(subEl){
+      evt.stopPropagation();
+      doSubClick(subEl.dataset.subid, subEl.dataset.parent, subEl.dataset.radio==='1');
+    } else if(addonEl){
+      doAddonClick(addonEl.dataset.addonid);
+    }
+  };
+}
+function buildSubsHtml(subs, parentId){
+  // XB = drinks (radio, 1 max), XH = oils (radio, 1 max), XG = snacks (radio, 1 max)
+  // Tea subs (XB1) = check, multiple flavours allowed
+  const isRadio=(parentId==='XH'||parentId==='XB'||parentId==='XG');
+  // Is any drink (XB child) already selected?
+  const anyDrinkSel = parentId==='XB' ? subs.some(s=>booking.addonSel[s.id]) : false;
+  const teaSel = parentId==='XB' ? subs.some(s=>s.id==='XB1'&&booking.addonSel[s.id]) : false;
+  let out='<div class="addon-subs">';
+  subs.forEach(s=>{
+    const sel=!!booking.addonSel[s.id];
+    // Dull non-tea drinks when tea is selected, and dull tea when another drink is selected
+    const isDulled = parentId==='XB' && anyDrinkSel && !sel;
+    out+=`<span class="addon-sub-item${sel?' selected':''}${isDulled?' disabled':''}" data-subid="${s.id}" data-parent="${parentId}" data-radio="${isRadio?1:0}">${s.name}</span>`;
+    if(sel&&s.desc) out+=`<div class="addon-sub-desc">${s.desc}</div>`;
+    // Tea (XB1): show tea flavours below tea, only when tea is selected
+    if(sel&&s.subs&&s.subs.length) out+=buildSubsHtml(s.subs, s.id);
+  });
+  out+='</div>';
+  return out;
+}
+function doAddonClick(id){
+  if(booking.addonSel[id]){
+    // Deselecting — always allowed
+    delete booking.addonSel[id];
+    const a=state.addons.find(x=>x.id===id);if(a&&a.subs)clearSubs(a.subs);
+  } else {
+    // Selecting — check 3-addon max
+    const svc=state.services.find(s=>s.id===booking.serviceId);
+    const availIds=svc?svc.addons:[];
+    const currentCount=availIds.filter(aid=>booking.addonSel[aid]).length;
+    if(currentCount>=3){showToast('Maximum 3 add-ons per session');return;}
+    booking.addonSel[id]=true;
+  }
+  renderAddons();
+}
+function doSubClick(id, parentId, isRadio){
+  if(isRadio){
+    // Clear all siblings
+    const parentAddon=findAddon(parentId,state.addons);
+    if(parentAddon&&parentAddon.subs){
+      parentAddon.subs.forEach(s=>{
+        if(s.id!==id){delete booking.addonSel[s.id];if(s.subs)clearSubs(s.subs);}
+      });
+    }
+  }
+  if(booking.addonSel[id]){
+    const a=findAddon(id,state.addons);if(a&&a.subs)clearSubs(a.subs);
+    delete booking.addonSel[id];
+  } else {
+    booking.addonSel[id]=true;
+  }
+  renderAddons();
+}
+
+// ── AMBIANCE ──────────────────────────────────────────────────────────────────
+function renderAmbiance(){
+  const sel=booking.ambianceSel||[],atMax=sel.length>=3;
+  document.getElementById('ambianceRow').innerHTML=state.ambiance.map(a=>{
+    const on=sel.includes(a.id),dis=!on&&atMax;
+    return`<div class="amb-pill${on?' active':''}${dis?' disabled':''}" onclick="toggleAmb('${a.id}',this)">${a.name}</div>`;
+  }).join('');
+}
+function toggleAmb(id,el){
+  if(el.classList.contains('disabled'))return;
+  const idx=(booking.ambianceSel||[]).indexOf(id);
+  if(idx>=0)booking.ambianceSel.splice(idx,1);
+  else{if(!booking.ambianceSel)booking.ambianceSel=[];if(booking.ambianceSel.length<3)booking.ambianceSel.push(id);}
+  renderAmbiance();
+}
+
+// ── BOOK SESSION ──────────────────────────────────────────────────────────────
+function collectAddonNames(){
+  const names=[];
+  function walk(list){list.forEach(a=>{if(booking.addonSel[a.id]){names.push(a.name);if(a.subs)walk(a.subs);}});}
+  walk(state.addons);return names;
+}
+function bookSession(){
+  if(!booking.serviceId){showToast('Please choose a treatment');return;}
+  const svc=state.services.find(s=>s.id===booking.serviceId);
+  const addons=collectAddonNames();
+  const ambiance=(booking.ambianceSel||[]).map(id=>{const o=state.ambiance.find(a=>a.id===id);return o?o.name:id;});
+  const date=document.getElementById('bookDate').value;
+  pendingSession={id:'sess_'+Date.now(),client:booking.client,therapist:booking.therapist,serviceId:booking.serviceId,serviceName:svc.name,date:date||new Date().toISOString(),addons,ambiance,rating:0,notes:'',createdBy:state.currentUser};
+  // Show review modal
+  const dateStr=pendingSession.date?new Date(pendingSession.date).toLocaleString('en-GB',{weekday:'long',day:'numeric',month:'long',hour:'2-digit',minute:'2-digit'}):'';
+  document.getElementById('reviewContent').innerHTML=buildReviewHtml(pendingSession);
+  document.getElementById('reviewModal').classList.add('open');
+}
+function buildReviewHtml(s){
+  const svc=state.services.find(sv=>sv.id===s.serviceId)||{name:s.serviceName};
+  const dateStr=s.date?new Date(s.date).toLocaleString('en-GB',{weekday:'long',day:'numeric',month:'long',hour:'2-digit',minute:'2-digit'}):'';
+  const ambChips=(s.ambiance||[]).map(a=>`<span class="review-chip amb">${a}</span>`).join('');
+  const addChips=(s.addons||[]).map(a=>`<span class="review-chip">${a}</span>`).join('');
+  return`
+    <div class="review-section">
+      <div class="review-label">Treatment</div>
+      <div class="review-value">${svc.name}</div>
+    </div>
+    <div class="review-divider"></div>
+    <div class="review-section">
+      <div class="review-label">Relaxing</div>
+      <div class="review-value">${s.client}</div>
+    </div>
+    <div class="review-section">
+      <div class="review-label">Therapist</div>
+      <div class="review-value">${s.therapist}</div>
+    </div>
+    <div class="review-divider"></div>
+    <div class="review-section">
+      <div class="review-label">Date & time</div>
+      <div class="review-value">${dateStr}</div>
+    </div>
+    ${s.ambiance&&s.ambiance.length?`<div class="review-divider"></div><div class="review-section"><div class="review-label">Ambiance</div><div class="review-chips">${ambChips}</div></div>`:''}
+    ${s.addons&&s.addons.length?`<div class="review-divider"></div><div class="review-section"><div class="review-label">Add-ons</div><div class="review-chips">${addChips}</div></div>`:''}
+  `;
+}
+function confirmFromReview(){
+  if(!pendingSession)return;
+  document.getElementById('reviewModal').classList.remove('open');
+  const session = {...pendingSession};
+  session.status = 'pending';
+  state.sessions.push(session);
+  pendingSession=null;
+  booking={client:state.currentUser,therapist:null,serviceId:null,addonSel:{},ambianceSel:[]};
+  saveLocal();
+  showToast('Sending request to '+session.therapist+' ✦');
+  sendBookingEmail(session).then(()=>{
+    showToast('Request sent to '+session.therapist+' ✦');
+  }).catch(err=>{
+    console.error('Email error:',err);
+    showToast('Saved — email could not be sent');
+  });
+  goTo('home');
+}
+document.querySelectorAll('.star').forEach(star=>{
+  star.addEventListener('click',()=>{
+    ratingValue=parseInt(star.dataset.v);
+    document.querySelectorAll('.star').forEach(s=>s.classList.toggle('lit',parseInt(s.dataset.v)<=ratingValue));
+  });
+});
+let ratingSessionId=null;
+function submitRating(){
+  const notes=document.getElementById('ratingNotes').value.trim();
+  if(ratingSessionId){
+    const s=state.sessions.find(x=>x.id===ratingSessionId);
+    if(s){s.rating=ratingValue;s.notes=notes;}
+    ratingSessionId=null;
+    document.getElementById('ratingModal').classList.remove('open');
+    saveLocal();showToast('Rating saved ✦');renderHistory();
+  }
+}
+
+// ── HISTORY ───────────────────────────────────────────────────────────────────
+function renderHistory(){
+  const list=document.getElementById('historyList');
+  if(!state.sessions.length){list.innerHTML='<div class="empty-state"><span class="empty-emoji">🛁</span><div class="empty-text">No sessions yet.<br>Reserve your first one.</div></div>';return;}
+  const now=new Date();
+  const sorted=[...state.sessions].sort((a,b)=>new Date(b.date)-new Date(a.date));
+  list.innerHTML=sorted.map(s=>{
+    const svc=state.services.find(sv=>sv.id===s.serviceId)||{name:s.serviceName||'Session',id:''};
+    const sessionDate=new Date(s.date);
+    const isPast=sessionDate<now;
+    const stars=s.rating?'⭐'.repeat(s.rating):'';
+    const dateStr=s.date?new Date(s.date).toLocaleString('en-GB',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}):'';
+    let statusBadge;
+    if(s.status==='confirmed'){
+      statusBadge=`<span style="font-size:9px;background:rgba(139,74,42,0.08);color:var(--cognac);padding:2px 8px;border-radius:99px;letter-spacing:0.06em;">Confirmed ✦</span>`;
+    } else if(s.status==='declined'){
+      statusBadge=`<span style="font-size:9px;background:var(--ivory-2);color:var(--text-3);padding:2px 8px;border-radius:99px;letter-spacing:0.06em;">Declined</span>`;
+    } else if(s.status==='pending'){
+      statusBadge=`<span style="font-size:9px;background:rgba(201,169,110,0.15);color:var(--champagne-2);padding:2px 8px;border-radius:99px;letter-spacing:0.06em;">Awaiting confirmation</span>`;
+    } else if(isPast){
+      statusBadge=s.rating
+        ?`<span style="font-size:9px;background:rgba(139,74,42,0.08);color:var(--cognac);padding:2px 8px;border-radius:99px;letter-spacing:0.06em;">Completed</span>`
+        :`<span style="font-size:9px;background:var(--ivory-2);color:var(--text-3);padding:2px 8px;border-radius:99px;letter-spacing:0.06em;">Past · Unrated</span>`;
+    } else {
+      statusBadge=`<span style="font-size:9px;background:rgba(201,169,110,0.15);color:var(--champagne-2);padding:2px 8px;border-radius:99px;letter-spacing:0.06em;">Upcoming</span>`;
+    }
+    return`<div class="hist-item">
+      <div class="hist-top">
+        <div>
+          <div class="hist-service">${svc.name}</div>
+          <div style="margin-top:4px;">${statusBadge}</div>
+        </div>
+        <div class="hist-date" style="text-align:right;">${dateStr}</div>
+      </div>
+      <div class="hist-people" style="margin-top:8px;">${s.client} relaxed · ${s.therapist} therapist</div>
+      ${stars?`<div class="hist-stars" style="margin-top:6px;">${stars}</div>`:''}
+      ${s.notes?`<div class="hist-note" style="margin-top:4px;">"${s.notes}"</div>`:''}
+      <div style="display:flex;gap:8px;margin-top:12px;">
+        <button style="flex:1;padding:9px;background:none;border:0.5px solid var(--parchment);border-radius:var(--r-sm);font-family:'Jost',sans-serif;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-3);cursor:pointer;" onclick="showSessionDetail('${s.id}')">Show details</button>
+        <button style="flex:1;padding:9px;background:none;border:0.5px solid var(--champagne);border-radius:var(--r-sm);font-family:'Jost',sans-serif;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--cognac);cursor:pointer;" onclick="openRatingForSession('${s.id}')">${s.rating?'Edit rating':'Rate session'}</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+function showSessionDetail(sid){
+  const s=state.sessions.find(x=>x.id===sid);if(!s)return;
+  document.getElementById('detailTitle').textContent='Session details';
+  document.getElementById('detailContent').innerHTML=buildReviewHtml(s)
+    +(s.notes?`<div class="review-divider"></div><div class="review-section"><div class="review-label">Notes</div><div class="review-value" style="font-style:italic;">"${s.notes}"</div></div>`:'')
+    +(s.rating?`<div class="review-divider"></div><div class="review-section"><div class="review-label">Rating</div><div class="review-value">${'⭐'.repeat(s.rating)}</div></div>`:'');
+  document.getElementById('detailModal').classList.add('open');
+}
+function openRatingForSession(sid){
+  const s=state.sessions.find(x=>x.id===sid);if(!s)return;
+  pendingSession=null; ratingSessionId=sid;
+  const svc=state.services.find(sv=>sv.id===s.serviceId)||{name:s.serviceName};
+  document.getElementById('ratingSubtitle').textContent=svc.name+' · '+s.client;
+  document.getElementById('ratingNotes').value=s.notes||'';
+  ratingValue=s.rating||0;
+  document.querySelectorAll('.star').forEach(star=>{
+    star.classList.toggle('lit',parseInt(star.dataset.v)<=ratingValue);
+  });
+  document.getElementById('ratingModal').classList.add('open');
+}
+
+// ── SETTINGS ──────────────────────────────────────────────────────────────────
+function renderSettings(){
+  document.getElementById('settingsName').textContent=state.currentUser||'—';
+  document.getElementById('tileCountTreatments').textContent=state.services.length+' treatments';
+  document.getElementById('tileCountAddons').textContent=state.addons.length+' add-ons';
+  document.getElementById('tileCountAmbiance').textContent=state.ambiance.length+' options';
+}
+
+// ── ADMIN: TREATMENTS ─────────────────────────────────────────────────────────
+function renderAdminTreatments(){
+  document.getElementById('adminTreatmentList').innerHTML=state.services.map((s,i)=>`
+    <div class="admin-item">
+      <div class="admin-item-info">
+        <div class="admin-item-name">${s.name}</div>
+        <div class="admin-item-meta">${s.duration} · ${s.category}</div>
+        ${s.description?`<div class="admin-item-meta" style="font-style:italic;margin-top:2px;">${s.description}</div>`:''}
+        ${s.addons&&s.addons.length?`<div class="admin-item-meta" style="margin-top:4px;color:var(--champagne-2);">Add-ons: ${s.addons.join(', ')}</div>`:''}
+      </div>
+      <button class="admin-del" onclick="deleteTreatment(${i})">✕</button>
+    </div>`).join('');
+}
+function deleteTreatment(i){state.services.splice(i,1);saveLocal();renderAdminTreatments();showToast('Treatment removed ✦');}
+function openAddTreatment(){
+  document.getElementById('formSheet').innerHTML=`
+    <div class="sheet-handle"></div>
+    <h3>Add a treatment</h3>
+    <div class="field"><label>Name</label><input type="text" id="ftName" placeholder="The full treatment name"></div>
+    <div class="field"><label>Duration</label><input type="text" id="ftDuration" placeholder="e.g. 45 min"></div>
+    <div class="field"><label>Category</label>
+      <select id="ftCat"><option>The Body & Soul Collection</option><option>The Glow-Up Department</option><option>Maison Spa Club member specials</option></select>
+    </div>
+    <div class="field"><label>Description</label><textarea id="ftDesc" placeholder="What does this treatment involve?"></textarea></div>
+    <div class="field"><label>Available add-ons</label>
+      <div class="checkbox-list">${state.addons.map(a=>`
+        <div class="cb-item" data-id="${a.id}" onclick="this.classList.toggle('checked');this.querySelector('.cb-box').textContent=this.classList.contains('checked')?'✓':'';">
+          <div class="cb-box"></div>
+          <span class="cb-label">${a.name}</span>
+          <span style="font-size:10px;color:var(--text-3);margin-left:auto;">${a.id}</span>
+        </div>`).join('')}
+      </div>
+    </div>
+    <div class="form-btn-row" style="margin-top:16px;">
+      <button class="btn-cancel" onclick="closeForm()">Cancel</button>
+      <button class="btn-save" onclick="saveTreatment()">Add treatment</button>
+    </div>`;
+  document.getElementById('formModal').classList.add('open');
+}
+function saveTreatment(){
+  const name=document.getElementById('ftName').value.trim();
+  if(!name){showToast('Please enter a name');return;}
+  const addons=[...document.querySelectorAll('.cb-item.checked')].map(el=>el.dataset.id);
+  state.services.push({id:'svc_'+Date.now(),name,duration:document.getElementById('ftDuration').value.trim()||'30 min',category:document.getElementById('ftCat').value,description:document.getElementById('ftDesc').value.trim(),addons});
+  saveLocal();closeForm();renderAdminTreatments();showToast('Treatment added ✦');
+}
+
+// ── ADMIN: ADD-ONS ────────────────────────────────────────────────────────────
+function renderAdminAddons(){
+  document.getElementById('adminAddonList').innerHTML=state.addons.map((a,i)=>`
+    <div class="admin-item">
+      <div class="admin-item-info">
+        <div class="admin-item-name">${a.name} <span style="font-size:10px;color:var(--text-3);">(${a.id})</span></div>
+        ${a.desc?`<div class="admin-item-meta" style="font-style:italic;">${a.desc}</div>`:''}
+        ${a.subs&&a.subs.length?`<div class="admin-item-meta" style="margin-top:3px;">Sub-options: ${a.subs.map(s=>s.name+(s.desc?' — '+s.desc:'')).join(', ')}</div>`:''}
+      </div>
+      <button class="admin-del" onclick="deleteAddon(${i})">✕</button>
+    </div>`).join('');
+}
+function deleteAddon(i){state.addons.splice(i,1);saveLocal();renderAdminAddons();showToast('Add-on removed ✦');}
+function openAddAddon(){
+  tempSubs=[];
+  document.getElementById('formSheet').innerHTML=`
+    <div class="sheet-handle"></div>
+    <h3>Add an add-on</h3>
+    <div class="field"><label>Name</label><input type="text" id="faName" placeholder="e.g. Hot stone upgrade"></div>
+    <div class="field"><label>Description <span style="font-weight:300;text-transform:none;letter-spacing:0;">(optional)</span></label>
+      <textarea id="faDesc" placeholder="Short description shown under the name in the booking screen"></textarea>
+    </div>
+    <div class="field">
+      <label>Sub-options <span style="font-weight:300;text-transform:none;letter-spacing:0;">(optional)</span></label>
+      <div class="sub-chip-row" id="subChipRow"></div>
+      <div class="sub-add-row">
+        <input type="text" id="faSubName" placeholder="Sub-option name">
+        <input type="text" id="faSubDesc" placeholder="Description (optional)">
+        <button class="btn-small" onclick="addSubOpt()">Add</button>
+      </div>
+    </div>
+    <div class="form-btn-row" style="margin-top:16px;">
+      <button class="btn-cancel" onclick="closeForm()">Cancel</button>
+      <button class="btn-save" onclick="saveAddon()">Add add-on</button>
+    </div>`;
+  document.getElementById('formModal').classList.add('open');
+}
+function addSubOpt(){
+  const name=document.getElementById('faSubName').value.trim(),desc=document.getElementById('faSubDesc').value.trim();
+  if(!name)return;
+  tempSubs.push({id:'sub_'+Date.now(),name,desc,subs:[]});
+  document.getElementById('faSubName').value='';document.getElementById('faSubDesc').value='';
+  document.getElementById('subChipRow').innerHTML=tempSubs.map((s,i)=>`
+    <div class="sub-chip">${s.name}${s.desc?` <em style="font-size:10px;color:var(--text-3);">— ${s.desc}</em>`:''}
+      <button onclick="tempSubs.splice(${i},1);document.getElementById('subChipRow').innerHTML=tempSubs.map((s,i)=>'<div class=sub-chip>'+s.name+'<button onclick=\\'tempSubs.splice('+i+',1);renderSubChipRow()\\'>×</button></div>').join('');">×</button>
+    </div>`).join('');
+}
+function saveAddon(){
+  const name=document.getElementById('faName').value.trim();
+  if(!name){showToast('Please enter a name');return;}
+  state.addons.push({id:'X_'+Date.now(),name,desc:document.getElementById('faDesc').value.trim(),subs:[...tempSubs]});
+  saveLocal();closeForm();renderAdminAddons();showToast('Add-on added ✦');
+}
+
+// ── ADMIN: AMBIANCE ───────────────────────────────────────────────────────────
+function renderAdminAmbiance(){
+  document.getElementById('adminAmbianceList').innerHTML=state.ambiance.map((a,i)=>`
+    <div class="admin-item">
+      <div class="admin-item-info"><div class="admin-item-name">${a.name}</div></div>
+      <button class="admin-del" onclick="deleteAmbiance(${i})">✕</button>
+    </div>`).join('');
+}
+function deleteAmbiance(i){state.ambiance.splice(i,1);saveLocal();renderAdminAmbiance();showToast('Removed ✦');}
+function openAddAmbiance(){
+  document.getElementById('formSheet').innerHTML=`
+    <div class="sheet-handle"></div>
+    <h3>Add ambiance option</h3>
+    <div class="field"><label>Name</label><input type="text" id="fambName" placeholder="e.g. Rose water mist"></div>
+    <div class="form-btn-row" style="margin-top:16px;">
+      <button class="btn-cancel" onclick="closeForm()">Cancel</button>
+      <button class="btn-save" onclick="saveAmbiance()">Add option</button>
+    </div>`;
+  document.getElementById('formModal').classList.add('open');
+}
+function saveAmbiance(){
+  const name=document.getElementById('fambName').value.trim();
+  if(!name){showToast('Please enter a name');return;}
+  state.ambiance.push({id:'Z_'+Date.now(),name});
+  saveLocal();closeForm();renderAdminAmbiance();showToast('Option added ✦');
+}
+
+function closeForm(){document.getElementById('formModal').classList.remove('open');}
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
+
+
+// ── EMAIL CONFIG ──────────────────────────────────────────────────────────────
+const EMAILJS_PUBLIC_KEY   = 'V75XOJyF0DbG7NymK';
+const EMAILJS_SERVICE_ID   = 'service_xe3jz9r';
+const TEMPLATE_BOOKING     = 'template_g14gk5q';  // to therapist
+const TEMPLATE_RESPONSE    = 'template_1ai0cme';  // to client (confirm or cancel)
+const APP_URL              = 'YOUR_GITHUB_PAGES_URL'; // update after hosting
+
+const USER_EMAILS = {
+  'majken':   'majken.helen@gmail.com',
+  'rønnaug':  'ronnaugsk@gmail.com',
+};
+
+function getUserEmail(name){
+  return USER_EMAILS[name.toLowerCase()] || '';
+}
+
+function buildConfirmEmailHtml(s, svc){
+  const dateStr = new Date(s.date).toLocaleString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'});
+  return `<!DOCTYPE html><html><body style="margin:0;padding:0;background:#F2EDE4;font-family:'Georgia',serif;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#F2EDE4;padding:40px 0;">
+<tr><td align="center">
+<table width="520" cellpadding="0" cellspacing="0" style="max-width:520px;width:100%;">
+<tr><td align="center" style="padding:0 0 32px 0;">
+  <span style="font-family:'Georgia',serif;font-size:28px;color:#2A1F14;letter-spacing:4px;">MAISON</span>
+  <span style="font-family:'Georgia',serif;font-size:20px;color:#8B4A2A;"> · </span>
+  <span style="font-family:'Georgia',serif;font-size:28px;color:#2A1F14;letter-spacing:4px;">SPA</span><br>
+  <span style="font-size:10px;color:#9A8070;letter-spacing:6px;text-transform:uppercase;">Votre retraite privée</span>
+  <table width="100%" cellpadding="0" cellspacing="0" style="margin-top:24px;"><tr>
+    <td style="border-bottom:0.5px solid #C9A96E;width:45%;"></td>
+    <td align="center" style="width:10%;padding-bottom:4px;"><span style="color:#C9A96E;">✦</span></td>
+    <td style="border-bottom:0.5px solid #C9A96E;width:45%;"></td>
+  </tr></table>
+</td></tr>
+<tr><td style="background:#FAF6EF;border:0.5px solid #DDD4C4;border-radius:16px;padding:40px 48px;">
+  <table cellpadding="0" cellspacing="0" style="margin-bottom:24px;"><tr>
+    <td style="background:rgba(139,74,42,0.08);border-radius:99px;padding:6px 18px;">
+      <span style="font-size:10px;letter-spacing:3px;text-transform:uppercase;color:#8B4A2A;font-family:'Helvetica Neue',Arial,sans-serif;">Session confirmed ✦</span>
+    </td>
+  </tr></table>
+  <h1 style="margin:0 0 20px 0;font-family:'Georgia',serif;font-size:26px;font-weight:normal;color:#2A1F14;">Bonjour <em style="color:#8B4A2A;">${s.client}</em>,</h1>
+  <p style="margin:0 0 24px 0;font-size:14px;color:#6B5040;line-height:1.8;font-family:'Helvetica Neue',Arial,sans-serif;font-weight:300;">Your session has been confirmed by <strong style="font-weight:normal;color:#2A1F14;">${s.therapist}</strong>. We look forward to your ritual.</p>
+  <table width="100%" cellpadding="0" cellspacing="0" style="border-top:0.5px solid #E8E0D4;padding-top:20px;">
+    <tr><td style="padding:10px 0;border-bottom:0.5px solid #F2EDE4;">
+      <span style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#B8923A;display:block;margin-bottom:4px;font-family:'Helvetica Neue',Arial,sans-serif;">Treatment</span>
+      <span style="font-family:'Georgia',serif;font-size:15px;color:#2A1F14;">${svc.name}</span>
+    </td></tr>
+    <tr><td style="padding:10px 0;border-bottom:0.5px solid #F2EDE4;">
+      <span style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#B8923A;display:block;margin-bottom:4px;font-family:'Helvetica Neue',Arial,sans-serif;">Date & time</span>
+      <span style="font-family:'Georgia',serif;font-size:15px;color:#2A1F14;">${dateStr}</span>
+    </td></tr>
+    <tr><td style="padding:10px 0;">
+      <span style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#B8923A;display:block;margin-bottom:4px;font-family:'Helvetica Neue',Arial,sans-serif;">Your therapist</span>
+      <span style="font-family:'Georgia',serif;font-size:15px;color:#2A1F14;">${s.therapist}</span>
+    </td></tr>
+  </table>
+  <p style="margin:24px 0 0 0;font-family:'Georgia',serif;font-size:15px;color:#9A8070;font-style:italic;text-align:center;">"Prepare to be cherished."</p>
+</td></tr>
+<tr><td align="center" style="padding:28px 0 0 0;">
+  <p style="margin:0;font-size:11px;color:#9A8070;letter-spacing:1px;font-family:'Helvetica Neue',Arial,sans-serif;">Maison · Spa &nbsp;·&nbsp; Your private retreat</p>
+</td></tr>
+</table></td></tr></table></body></html>`;
+}
+
+function buildCancelEmailHtml(s, svc){
+  const dateStr = new Date(s.date).toLocaleString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'});
+  return `<!DOCTYPE html><html><body style="margin:0;padding:0;background:#F2EDE4;font-family:'Georgia',serif;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#F2EDE4;padding:40px 0;">
+<tr><td align="center">
+<table width="520" cellpadding="0" cellspacing="0" style="max-width:520px;width:100%;">
+<tr><td align="center" style="padding:0 0 32px 0;">
+  <span style="font-family:'Georgia',serif;font-size:28px;color:#2A1F14;letter-spacing:4px;">MAISON</span>
+  <span style="font-family:'Georgia',serif;font-size:20px;color:#8B4A2A;"> · </span>
+  <span style="font-family:'Georgia',serif;font-size:28px;color:#2A1F14;letter-spacing:4px;">SPA</span><br>
+  <span style="font-size:10px;color:#9A8070;letter-spacing:6px;text-transform:uppercase;">Votre retraite privée</span>
+  <table width="100%" cellpadding="0" cellspacing="0" style="margin-top:24px;"><tr>
+    <td style="border-bottom:0.5px solid #C9A96E;width:45%;"></td>
+    <td align="center" style="width:10%;padding-bottom:4px;"><span style="color:#C9A96E;">✦</span></td>
+    <td style="border-bottom:0.5px solid #C9A96E;width:45%;"></td>
+  </tr></table>
+</td></tr>
+<tr><td style="background:#FAF6EF;border:0.5px solid #DDD4C4;border-radius:16px;padding:40px 48px;">
+  <table cellpadding="0" cellspacing="0" style="margin-bottom:24px;"><tr>
+    <td style="background:#F2EDE4;border:0.5px solid #DDD4C4;border-radius:99px;padding:6px 18px;">
+      <span style="font-size:10px;letter-spacing:3px;text-transform:uppercase;color:#9A8070;font-family:'Helvetica Neue',Arial,sans-serif;">Session update</span>
+    </td>
+  </tr></table>
+  <h1 style="margin:0 0 20px 0;font-family:'Georgia',serif;font-size:26px;font-weight:normal;color:#2A1F14;">Bonjour <em style="color:#8B4A2A;">${s.client}</em>,</h1>
+  <p style="margin:0 0 24px 0;font-size:14px;color:#6B5040;line-height:1.8;font-family:'Helvetica Neue',Arial,sans-serif;font-weight:300;">Unfortunately <strong style="font-weight:normal;color:#2A1F14;">${s.therapist}</strong> is unable to accommodate your request for <strong style="font-weight:normal;color:#2A1F14;">${dateStr}</strong>.</p>
+  <table width="100%" cellpadding="0" cellspacing="0" style="border-top:0.5px solid #E8E0D4;padding-top:20px;margin-bottom:24px;">
+    <tr><td style="padding:10px 0;border-bottom:0.5px solid #F2EDE4;">
+      <span style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#B8923A;display:block;margin-bottom:4px;font-family:'Helvetica Neue',Arial,sans-serif;">Treatment requested</span>
+      <span style="font-family:'Georgia',serif;font-size:15px;color:#9A8070;text-decoration:line-through;">${svc.name}</span>
+    </td></tr>
+    <tr><td style="padding:10px 0;">
+      <span style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#B8923A;display:block;margin-bottom:4px;font-family:'Helvetica Neue',Arial,sans-serif;">Requested time</span>
+      <span style="font-family:'Georgia',serif;font-size:15px;color:#9A8070;text-decoration:line-through;">${dateStr}</span>
+    </td></tr>
+  </table>
+  <p style="text-align:center;font-size:13px;color:#6B5040;font-family:'Helvetica Neue',Arial,sans-serif;font-weight:300;">Please open the app to choose a new time.<br>Your next ritual awaits.</p>
+  <table width="100%" cellpadding="0" cellspacing="0" style="margin-top:20px;"><tr><td align="center">
+    <a href="${APP_URL}" style="display:inline-block;color:#8B4A2A;font-family:'Helvetica Neue',Arial,sans-serif;font-size:11px;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:14px 40px;border-radius:6px;border:0.5px solid #8B4A2A;">Open Maison · Spa</a>
+  </td></tr></table>
+</td></tr>
+<tr><td align="center" style="padding:28px 0 0 0;">
+  <p style="margin:0;font-size:11px;color:#9A8070;letter-spacing:1px;font-family:'Helvetica Neue',Arial,sans-serif;">Maison · Spa &nbsp;·&nbsp; Your private retreat</p>
+</td></tr>
+</table></td></tr></table></body></html>`;
+}
+
+async function sendBookingEmail(session){
+  const svc = state.services.find(s=>s.id===session.serviceId)||{name:session.serviceName};
+  const dateStr = new Date(session.date).toLocaleString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'});
+  const therapistEmail = getUserEmail(session.therapist);
+  const clientEmail = getUserEmail(session.client);
+  if(!therapistEmail){ console.warn('No email for therapist'); return; }
+
+  const confirmLink = APP_URL + '?action=confirm&id=' + session.id;
+  const declineLink = APP_URL + '?action=decline&id=' + session.id;
+
+  const addonsText = (session.addons||[]).join(', ') || 'None';
+  const ambianceText = (session.ambiance||[]).join(', ') || 'None';
+
+  await emailjs.send(EMAILJS_SERVICE_ID, TEMPLATE_BOOKING, {
+    therapist_name:  session.therapist,
+    therapist_email: therapistEmail,
+    client_name:     session.client,
+    client_email:    clientEmail,
+    treatment:       svc.name,
+    datetime:        dateStr,
+    addons:          addonsText,
+    ambiance:        ambianceText,
+    confirm_link:    confirmLink,
+    decline_link:    declineLink,
+  });
+}
+
+async function sendResponseEmail(session, confirmed){
+  const svc = state.services.find(s=>s.id===session.serviceId)||{name:session.serviceName};
+  const clientEmail = getUserEmail(session.client);
+  if(!clientEmail){ console.warn('No email for client'); return; }
+
+  const subject = confirmed ? 'Your session is confirmed ✦' : 'Session update from Maison · Spa';
+  const messageBody = confirmed ? buildConfirmEmailHtml(session, svc) : buildCancelEmailHtml(session, svc);
+
+  await emailjs.send(EMAILJS_SERVICE_ID, TEMPLATE_RESPONSE, {
+    client_email: clientEmail,
+    subject:      subject,
+    message_body: messageBody,
+  });
+}
+
+// Handle confirm/decline links from email
+function checkEmailAction(){
+  const params = new URLSearchParams(window.location.search);
+  const action = params.get('action');
+  const id     = params.get('id');
+  if(!action || !id) return;
+
+  loadLocal();
+  const s = state.sessions.find(x=>x.id===id);
+  if(!s){ showToast('Session not found'); return; }
+
+  if(action==='confirm'){
+    s.status='confirmed';
+    saveLocal();
+    sendResponseEmail(s, true).catch(console.error);
+    showEmailActionResult('confirmed', s);
+  } else if(action==='decline'){
+    s.status='declined';
+    saveLocal();
+    sendResponseEmail(s, false).catch(console.error);
+    showEmailActionResult('declined', s);
+  }
+
+  // Clean URL
+  window.history.replaceState({}, '', window.location.pathname);
+}
+
+function showEmailActionResult(action, session){
+  const svc = state.services.find(s=>s.id===session.serviceId)||{name:session.serviceName};
+  const isConfirm = action==='confirmed';
+  // Show a full-screen result page before the app loads
+  document.body.innerHTML = `
+    <div style="min-height:100vh;background:#F2EDE4;display:flex;align-items:center;justify-content:center;font-family:'Jost',sans-serif;">
+      <div style="background:#FAF6EF;border:0.5px solid #DDD4C4;border-radius:16px;padding:48px 40px;max-width:380px;width:90%;text-align:center;">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:300;color:#2A1F14;letter-spacing:4px;margin-bottom:6px;">MAISON · SPA</div>
+        <div style="font-size:9px;color:#9A8070;letter-spacing:5px;text-transform:uppercase;margin-bottom:32px;">Votre retraite privée</div>
+        <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:10px;">
+          <div style="width:8px;height:8px;border-radius:50%;background:${isConfirm?'#8B4A2A':'#9A8070'};"></div>
+          <span style="font-size:10px;letter-spacing:3px;text-transform:uppercase;color:${isConfirm?'#8B4A2A':'#9A8070'};">${isConfirm?'Session confirmed':'Session declined'}</span>
+        </div>
+        <p style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;color:#2A1F14;margin:0 0 8px 0;font-style:italic;">${session.client}</p>
+        <p style="font-size:12px;color:#9A8070;font-weight:300;margin:0 0 24px 0;">${svc.name}</p>
+        <div style="height:0.5px;background:#DDD4C4;margin-bottom:24px;"></div>
+        <p style="font-size:13px;color:#6B5040;font-weight:300;line-height:1.7;margin:0 0 28px 0;">
+          ${isConfirm ? session.client+' has been notified that you've confirmed their session.' : session.client+' has been notified and can choose a new time.'}
+        </p>
+        <a href="${window.location.pathname}" style="display:inline-block;background:#8B4A2A;color:#FAF6EF;font-size:10px;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:14px 36px;border-radius:6px;">Open app</a>
+      </div>
+    </div>`;
+}
+// ── END EMAIL ─────────────────────────────────────────────────────────────────
+
+emailjs.init(EMAILJS_PUBLIC_KEY);
+checkEmailAction();
+if(!document.body.innerHTML.includes("Open app")){
+  loadLocal();
+  if(state.currentUser)loginSuccess();
+}
+</script>
+</body>
+</html>
