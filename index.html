@@ -305,17 +305,9 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
       <div class="field"><label>Password</label><input type="password" id="loginPass" placeholder="••••••••" autocomplete="current-password"></div>
       <button class="btn-primary" onclick="login()">Enter</button>
       <div class="error-msg" id="loginError"></div>
-      <div class="login-switch">No account? <a onclick="showRegister()">Create one</a></div>
+      <div style="font-size:11px;color:var(--text-3);text-align:center;margin-top:14px;font-weight:300;">Default password: <em>maison</em></div>
     </div>
-    <div class="login-card" id="registerCard" style="display:none;">
-      <h2>Create account</h2>
-      <div class="field"><label>Your name</label><input type="text" id="regName" placeholder="Majken or Rønnaug" autocomplete="username"></div>
-      <div class="field"><label>Password</label><input type="password" id="regPass" placeholder="Choose a password" autocomplete="new-password"></div>
-      <button class="btn-primary" onclick="register()">Create account</button>
-      <div class="error-msg" id="registerError"></div>
-      <div class="login-switch">Already have one? <a onclick="showLogin()">Sign in</a></div>
-      <div style="font-size:11px;color:var(--champagne);opacity:0.8;text-align:center;margin-top:14px;">Demo mode — data saved in this browser only</div>
-    </div>
+
   </div>
 
   <!-- HOME -->
@@ -416,9 +408,9 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
         </div>
       </div>
       <div class="config-section" style="margin-top:16px;">
-        <div class="config-label">Storage</div>
+        <div class="config-label">Sync</div>
         <div class="config-card">
-          <div class="config-info">Demo mode — all data is saved in this browser only.</div>
+          <div class="config-info">Data is shared between Majken and Rønnaug via JSONBin and cached locally.</div>
         </div>
       </div>
     </div>
@@ -546,7 +538,14 @@ function getIcon(svc){
 
 
 // ── STATE ─────────────────────────────────────────────────────────────────────
-let state={currentUser:null,users:{},sessions:[],services:[],addons:[],ambiance:[]};
+let state={
+  currentUser:null,
+  users:{
+    'majken':  {name:'Majken',  hash:'hhvxpsz', email:'majken.helen@gmail.com'},
+    'rønnaug': {name:'Rønnaug', hash:'hhvxpsz', email:'ronnaugsk@gmail.com'},
+  },
+  sessions:[],services:[],addons:[],ambiance:[]
+};
 let booking={client:null,therapist:null,serviceId:null,addonSel:{},ambianceSel:[]};
 let pendingSession=null,ratingValue=0,tempSubs=[];
 
@@ -620,50 +619,22 @@ async function loadBin(){
 
 // ── AUTH ──────────────────────────────────────────────────────────────────────
 function hashPass(p){let h=0;for(let i=0;i<p.length;i++)h=(Math.imul(31,h)+p.charCodeAt(i))|0;return'h'+Math.abs(h).toString(36);}
-function showRegister(){document.getElementById('loginCard').style.display='none';document.getElementById('registerCard').style.display='block';}
-function showLogin(){document.getElementById('loginCard').style.display='block';document.getElementById('registerCard').style.display='none';}
+function showRegister(){ /* not used */ }
+function showLogin(){ document.getElementById('loginCard').style.display='block'; }
 
-async function register(){
-  const name=document.getElementById('regName').value.trim();
-  const pass=document.getElementById('regPass').value;
-  const err=document.getElementById('registerError');err.textContent='';
-  if(!name||!pass){err.textContent='Please enter a name and password.';return;}
-  if(pass.length<4){err.textContent='Password must be at least 4 characters.';return;}
-  err.textContent='Creating account…';
-  try{
-    await loadBin();
-  }catch(e){
-    console.warn('Could not sync bin on register, continuing anyway');
-  }
-  if(state.users[name.toLowerCase()]){err.textContent='That name is already taken.';return;}
-  state.users[name.toLowerCase()]={name,hash:hashPass(pass)};
-  state.currentUser=name;
-  saveLocal();
-  err.textContent='Saving…';
-  try{
-    await saveData();
-  }catch(e){
-    console.warn('Bin save failed, continuing with local only');
-  }
-  err.textContent='';
-  loginSuccess();
-}
+function register(){ /* accounts pre-configured */ }
 async function login(){
   const name=document.getElementById('loginName').value.trim();
   const pass=document.getElementById('loginPass').value;
   const err=document.getElementById('loginError');err.textContent='';
   if(!name||!pass){err.textContent='Enter your name and password.';return;}
-  err.textContent='Signing in…';
-  try{
-    await loadBin();
-  }catch(e){
-    console.warn('Could not sync bin on login, using local cache');
-  }
   const user=state.users[name.toLowerCase()];
-  if(!user){err.textContent='Name not found. Please register first.';return;}
-  if(user.hash!==hashPass(pass)){err.textContent='Wrong password.';return;}
+  if(!user){err.textContent='Please enter Majken or Rønnaug.';return;}
+  if(user.hash!==hashPass(pass)){err.textContent='Wrong password. Try: maison';return;}
+  err.textContent='Syncing…';
+  try{ await loadBin(); }catch(e){ console.warn('Bin sync failed, using local'); }
   err.textContent='';
-  state.currentUser=name;saveLocal();loginSuccess();
+  state.currentUser=user.name;saveLocal();loginSuccess();
 }
 function loginSuccess(){
   showToast('Bienvenue, '+state.currentUser+' ✦');
@@ -675,7 +646,7 @@ function logout(){
   state.currentUser=null;saveLocal();
   document.getElementById('bottomNav').style.display='none';
   ['home','book','history','settings','adminTreatments','adminAddons','adminAmbiance'].forEach(s=>document.getElementById(s+'Screen').classList.remove('active'));
-  document.getElementById('loginScreen').classList.add('active');showLogin();
+  document.getElementById('loginScreen').classList.add('active');
 }
 
 // ── NAVIGATION ────────────────────────────────────────────────────────────────
