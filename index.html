@@ -1361,9 +1361,34 @@ function showEmailActionResult(action, session){
 }
 // ── END EMAIL ─────────────────────────────────────────────────────────────────
 
-// Expose async auth functions globally so onclick can reach them
+// Expose all functions called from onclick attributes to global scope
 window.register = register;
 window.login = login;
+window.showRegister = showRegister;
+window.showLogin = showLogin;
+window.logout = logout;
+window.goTo = goTo;
+window.toggleCat = toggleCat;
+window.setBooking = setBooking;
+window.selectService = selectService;
+window.bookSession = bookSession;
+window.confirmFromReview = confirmFromReview;
+window.submitRating = submitRating;
+window.toggleAmb = toggleAmb;
+window.showSessionDetail = showSessionDetail;
+window.openRatingForSession = openRatingForSession;
+window.doAddonClick = doAddonClick;
+window.openAddTreatment = openAddTreatment;
+window.saveTreatment = saveTreatment;
+window.deleteTreatment = deleteTreatment;
+window.openAddAddon = openAddAddon;
+window.saveAddon = saveAddon;
+window.deleteAddon = deleteAddon;
+window.addSubOpt = addSubOpt;
+window.openAddAmbiance = openAddAmbiance;
+window.saveAmbiance = saveAmbiance;
+window.deleteAmbiance = deleteAmbiance;
+window.closeForm = closeForm;
 
 emailjs.init(EMAILJS_PUBLIC_KEY);
 checkEmailAction();
