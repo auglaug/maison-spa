@@ -564,11 +564,15 @@ function saveLocal(){
 }
 async function saveBin(){
   try{
-    await fetch(JSONBIN_URL,{
+    const r=await fetch(JSONBIN_URL,{
       method:'PUT',
       headers:{'Content-Type':'application/json','X-Master-Key':JSONBIN_KEY,'X-Bin-Versioning':'false'},
       body:JSON.stringify(getPayload())
     });
+    if(!r.ok){
+      const t=await r.text();
+      console.warn('JSONBin save error:',r.status,t);
+    }
   }catch(e){console.warn('JSONBin save failed:',e);}
 }
 async function saveData(){
@@ -597,17 +601,19 @@ function loadLocal(){
 }
 async function loadBin(){
   try{
-    const r=await fetch(JSONBIN_URL+'/latest',{headers:{'X-Master-Key':JSONBIN_KEY}});
-    if(!r.ok) return false;
+    const r=await fetch(JSONBIN_URL+'/latest',{headers:{'X-Master-Key':JSONBIN_KEY,'X-Bin-Private':'true'}});
+    if(!r.ok){
+      console.warn('JSONBin load error:',r.status);
+      return false;
+    }
     const j=await r.json();
-    applyData(j.record);
-    // Keep currentUser from localStorage
+    if(j&&j.record) applyData(j.record);
     const local=JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}');
     state.currentUser=local.currentUser||null;
-    saveLocal(); // sync bin data to local cache
+    saveLocal();
     return true;
   }catch(e){
-    console.warn('JSONBin load failed, using local cache');
+    console.warn('JSONBin load failed:',e);
     return false;
   }
 }
@@ -623,13 +629,23 @@ async function register(){
   const err=document.getElementById('registerError');err.textContent='';
   if(!name||!pass){err.textContent='Please enter a name and password.';return;}
   if(pass.length<4){err.textContent='Password must be at least 4 characters.';return;}
-  // Sync from bin first to get latest users before checking if name is taken
-  await loadBin();
+  err.textContent='Creating account…';
+  try{
+    await loadBin();
+  }catch(e){
+    console.warn('Could not sync bin on register, continuing anyway');
+  }
   if(state.users[name.toLowerCase()]){err.textContent='That name is already taken.';return;}
   state.users[name.toLowerCase()]={name,hash:hashPass(pass)};
   state.currentUser=name;
   saveLocal();
-  await saveData();
+  err.textContent='Saving…';
+  try{
+    await saveData();
+  }catch(e){
+    console.warn('Bin save failed, continuing with local only');
+  }
+  err.textContent='';
   loginSuccess();
 }
 async function login(){
@@ -637,11 +653,16 @@ async function login(){
   const pass=document.getElementById('loginPass').value;
   const err=document.getElementById('loginError');err.textContent='';
   if(!name||!pass){err.textContent='Enter your name and password.';return;}
-  // Sync from bin to get latest users
-  await loadBin();
+  err.textContent='Signing in…';
+  try{
+    await loadBin();
+  }catch(e){
+    console.warn('Could not sync bin on login, using local cache');
+  }
   const user=state.users[name.toLowerCase()];
   if(!user){err.textContent='Name not found. Please register first.';return;}
   if(user.hash!==hashPass(pass)){err.textContent='Wrong password.';return;}
+  err.textContent='';
   state.currentUser=name;saveLocal();loginSuccess();
 }
 function loginSuccess(){
