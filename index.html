@@ -1361,13 +1361,16 @@ function showEmailActionResult(action, session){
 }
 // ── END EMAIL ─────────────────────────────────────────────────────────────────
 
+// Expose async auth functions globally so onclick can reach them
+window.register = register;
+window.login = login;
+
 emailjs.init(EMAILJS_PUBLIC_KEY);
 checkEmailAction();
 if(!document.body.innerHTML.includes("Open app")){
   loadLocal();
   if(state.currentUser){
     loginSuccess();
-    // Sync in background after login
     loadBin().then(synced=>{ if(synced) renderHome(); });
   }
 }
