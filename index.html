@@ -1804,7 +1804,7 @@ async function sendBookingEmail(session){
   const declineLink = APP_URL + '?action=decline&id=' + session.id + '&who=' + whoParam;
   const addonsText = (session.addons||[]).join(', ') || 'None';
   const ambianceText = (session.ambiance||[]).join(', ') || 'None';
-  const needsList = collectNeeds(session);
+  const needsList = collectNeeds(session).map(n=>n.charAt(0).toUpperCase()+n.slice(1));
   const needsHtml = needsList.length
     ? '<table width="100%" cellpadding="0" cellspacing="0" style="margin-top:8px;">'
       + needsList.map(n=>`<tr><td style="padding:5px 0;border-bottom:0.5px solid #F2EDE4;font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;color:#2A1F14;font-weight:300;">· ${n}</td></tr>`).join('')
