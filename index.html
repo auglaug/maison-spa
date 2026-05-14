@@ -413,6 +413,13 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
           <div class="config-info">Data is shared between Majken and Rønnaug via JSONBin and cached locally.</div>
         </div>
       </div>
+      <div class="config-section" style="margin-top:16px;">
+        <div class="config-label">Test email flow</div>
+        <div class="config-card">
+          <div class="config-info" style="margin-bottom:12px;">Simulate confirming or declining a pending session to test the email notification.</div>
+          <div id="testSessionList"></div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -749,7 +756,21 @@ function renderBook(){
   renderAddons();renderAmbiance();
 }
 function toggleCat(h){h.classList.toggle('open');h.nextElementSibling.classList.toggle('open');}
-function setBooking(f,v,el){booking[f]=v;el.closest('[id$="Toggle"]').querySelectorAll('.ptoggle').forEach(b=>b.classList.remove('active'));el.classList.add('active');}
+function setBooking(f,v,el){
+  booking[f]=v;
+  // Auto-assign the other person to the opposite role
+  const names=Object.values(state.users)
+    .filter((u,i,arr)=>arr.findIndex(x=>x.name===u.name)===i) // dedupe
+    .map(u=>u.name);
+  const other=names.find(n=>n!==v);
+  if(other){
+    if(f==='client') booking.therapist=other;
+    if(f==='therapist') booking.client=other;
+  }
+  // Re-render both toggles
+  document.getElementById('clientToggle').innerHTML=names.map(n=>`<button class="ptoggle${booking.client===n?' active':''}" onclick="setBooking('client','${n}',this)">${n}</button>`).join('');
+  document.getElementById('therapistToggle').innerHTML=names.map(n=>`<button class="ptoggle${booking.therapist===n?' active':''}" onclick="setBooking('therapist','${n}',this)">${n}</button>`).join('');
+}
 function selectService(id,el){
   booking.serviceId=id;booking.addonSel={};
   document.querySelectorAll('.svc-item').forEach(i=>{i.classList.remove('selected');i.querySelector('.svc-check').textContent='';});
@@ -792,20 +813,15 @@ function renderAddons(){
   };
 }
 function buildSubsHtml(subs, parentId){
-  // XB = drinks (radio, 1 max), XH = oils (radio, 1 max), XG = snacks (radio, 1 max)
-  // Tea subs (XB1) = check, multiple flavours allowed
-  const isRadio=(parentId==='XH'||parentId==='XB'||parentId==='XG');
-  // Is any drink (XB child) already selected?
+  // XB = drinks (radio), XH = oils (radio), XG = snacks (radio), XB1 = tea flavours (radio)
+  const isRadio=(parentId==='XH'||parentId==='XB'||parentId==='XG'||parentId==='XB1');
   const anyDrinkSel = parentId==='XB' ? subs.some(s=>booking.addonSel[s.id]) : false;
-  const teaSel = parentId==='XB' ? subs.some(s=>s.id==='XB1'&&booking.addonSel[s.id]) : false;
   let out='<div class="addon-subs">';
   subs.forEach(s=>{
     const sel=!!booking.addonSel[s.id];
-    // Dull non-tea drinks when tea is selected, and dull tea when another drink is selected
     const isDulled = parentId==='XB' && anyDrinkSel && !sel;
     out+=`<span class="addon-sub-item${sel?' selected':''}${isDulled?' disabled':''}" data-subid="${s.id}" data-parent="${parentId}" data-radio="${isRadio?1:0}">${s.name}</span>`;
     if(sel&&s.desc) out+=`<div class="addon-sub-desc">${s.desc}</div>`;
-    // Tea (XB1): show tea flavours below tea, only when tea is selected
     if(sel&&s.subs&&s.subs.length) out+=buildSubsHtml(s.subs, s.id);
   });
   out+='</div>';
@@ -1014,6 +1030,46 @@ function renderSettings(){
   document.getElementById('tileCountTreatments').textContent=state.services.length+' treatments';
   document.getElementById('tileCountAddons').textContent=state.addons.length+' add-ons';
   document.getElementById('tileCountAmbiance').textContent=state.ambiance.length+' options';
+  renderTestSessions();
+}
+function renderTestSessions(){
+  const el=document.getElementById('testSessionList');
+  if(!el)return;
+  const pending=state.sessions.filter(s=>s.status==='pending'||!s.status);
+  if(!pending.length){
+    el.innerHTML='<div style="font-size:12px;color:var(--text-3);font-weight:300;font-style:italic;">No pending sessions to test.</div>';
+    return;
+  }
+  el.innerHTML=pending.map(s=>{
+    const svc=state.services.find(sv=>sv.id===s.serviceId)||{name:s.serviceName||'Session'};
+    const dateStr=s.date?new Date(s.date).toLocaleString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):'';
+    return`<div style="margin-bottom:14px;padding-bottom:14px;border-bottom:0.5px solid var(--ivory-3);">
+      <div style="font-size:13px;color:var(--text);margin-bottom:2px;">${svc.name}</div>
+      <div style="font-size:11px;color:var(--text-3);font-weight:300;margin-bottom:10px;">${s.client} · ${dateStr}</div>
+      <div style="display:flex;gap:8px;">
+        <button style="flex:1;padding:9px;background:var(--cognac);color:var(--ivory);border:none;border-radius:var(--r-sm);font-family:'Jost',sans-serif;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;" onclick="testConfirm('${s.id}')">Confirm</button>
+        <button style="flex:1;padding:9px;background:none;border:0.5px solid var(--parchment);border-radius:var(--r-sm);font-family:'Jost',sans-serif;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-3);cursor:pointer;" onclick="testDecline('${s.id}')">Decline</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+function testConfirm(sid){
+  const s=state.sessions.find(x=>x.id===sid);if(!s)return;
+  s.status='confirmed';
+  saveData();
+  showToast('Confirmed — sending email to '+s.client+' ✦');
+  sendResponseEmail(s,true).catch(e=>console.error('Email error:',e));
+  renderTestSessions();
+  renderHistory();
+}
+function testDecline(sid){
+  const s=state.sessions.find(x=>x.id===sid);if(!s)return;
+  s.status='declined';
+  saveData();
+  showToast('Declined — sending email to '+s.client+' ✦');
+  sendResponseEmail(s,false).catch(e=>console.error('Email error:',e));
+  renderTestSessions();
+  renderHistory();
 }
 
 // ── ADMIN: TREATMENTS ─────────────────────────────────────────────────────────
@@ -1379,6 +1435,8 @@ window.openAddAmbiance = openAddAmbiance;
 window.saveAmbiance = saveAmbiance;
 window.deleteAmbiance = deleteAmbiance;
 window.closeForm = closeForm;
+window.testConfirm = testConfirm;
+window.testDecline = testDecline;
 
 emailjs.init(EMAILJS_PUBLIC_KEY);
 checkEmailAction();
