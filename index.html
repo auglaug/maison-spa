@@ -581,6 +581,17 @@ async function saveData(){
   saveLocal();
   await saveBin();
 }
+function ensureUsers(){
+  // Always make sure both accounts exist regardless of what's in bin/localStorage
+  const defaults = {
+    'majken':  {name:'Majken',  hash:'hhvxpsz', email:'majken.helen@gmail.com'},
+    'rønnaug': {name:'Rønnaug', hash:'hhvxpsz', email:'ronnaugsk@gmail.com'},
+    'ronnaug': {name:'Rønnaug', hash:'hhvxpsz', email:'ronnaugsk@gmail.com'},
+  };
+  Object.entries(defaults).forEach(([k,v])=>{
+    if(!state.users[k]) state.users[k]=v;
+  });
+}
 function applyData(d){
   if(d.users) state.users=d.users;
   if(d.sessions) state.sessions=d.sessions;
@@ -600,6 +611,7 @@ function loadLocal(){
     state.addons=JSON.parse(JSON.stringify(DEFAULT_ADDONS));
     state.ambiance=JSON.parse(JSON.stringify(DEFAULT_AMBIANCE));
   }
+  ensureUsers();
 }
 async function loadBin(){
   try{
@@ -612,6 +624,7 @@ async function loadBin(){
     if(j&&j.record) applyData(j.record);
     const local=JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}');
     state.currentUser=local.currentUser||null;
+    ensureUsers();
     saveLocal();
     return true;
   }catch(e){
