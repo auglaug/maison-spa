@@ -1170,19 +1170,18 @@ function renderHistory(){
     .filter(s=>s.status==='pending' && new Date(s.date)>nowOslo)
     .sort(byDateAsc);
 
-  // ── Previous: past date+time, confirmed/completed or no status ───────────
-  const past=state.sessions
-    .filter(s=>{
-      const isPast=new Date(s.date)<=nowOslo;
-      return isPast && (s.status==='confirmed'||s.status==='completed'||!s.status);
-    });
-  const unrated=past.filter(s=>!s.rating||s.rating===0).sort(byDateDesc);
-  const rated=past.filter(s=>s.rating&&s.rating>0).sort(byDateDesc);
-
   // ── Cancelled ─────────────────────────────────────────────────────────────
   const cancelled=state.sessions
     .filter(s=>s.status==='cancelled'||s.status==='declined')
     .sort(byDateDesc);
+
+  // ── Previous: everything not in the above three buckets ───────────────────
+  const upcomingIds=new Set([...upcoming,...pending].map(s=>s.id));
+  const cancelledIds=new Set(cancelled.map(s=>s.id));
+  const past=state.sessions
+    .filter(s=>!upcomingIds.has(s.id)&&!cancelledIds.has(s.id));
+  const unrated=past.filter(s=>!s.rating||s.rating===0).sort(byDateDesc);
+  const rated=past.filter(s=>s.rating&&s.rating>0).sort(byDateDesc);
 
   const divider='<div style="height:0.5px;background:var(--parchment);margin:4px 22px 24px;"></div>';
 
