@@ -747,7 +747,10 @@ function goTo(s){
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active',n.dataset.screen===s));
   if(s==='home'){renderHome();loadBin().then(ok=>{if(ok)renderHome();});}
   if(s==='book'){window._calSelected=null;renderBook();}
-  if(s==='history'){renderHistory();loadBin().then(ok=>{if(ok)renderHistory();});}
+  if(s==='history'){
+    document.getElementById('historyList').innerHTML='<div style="padding:40px 22px;text-align:center;color:var(--text-3);font-size:13px;font-weight:300;font-style:italic;">Syncing…</div>';
+    loadBin().then(()=>renderHistory()).catch(()=>renderHistory());
+  }
   if(s==='settings'){renderSettings();loadBin().then(ok=>{if(ok)renderSettings();});}
   if(s==='adminTreatments')renderAdminTreatments();
   if(s==='adminAddons')renderAdminAddons();
