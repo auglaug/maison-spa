@@ -764,12 +764,12 @@ function renderHome(){
 
   // Find next upcoming session — include anything today or later
   const now=new Date();
-  const osloToday = new Date(new Date().toLocaleString('en-GB',{timeZone:'Europe/Oslo'}));
+  const osloToday = new Date(new Date().toLocaleString('sv-SE',{timeZone:'Europe/Oslo'}));
   const todayStart=new Date(osloToday.getFullYear(),osloToday.getMonth(),osloToday.getDate());
   const upcoming=state.sessions
     .filter(s=>{
       if(s.status!=='confirmed') return false;
-      return new Date(s.date)>new Date(new Date().toLocaleString('en-GB',{timeZone:'Europe/Oslo'}));
+      return new Date(s.date)>new Date(new Date().toLocaleString('sv-SE',{timeZone:'Europe/Oslo'}));
     })
     .sort((a,b)=>new Date(a.date)-new Date(b.date));
   const next=upcoming[0];
@@ -1014,7 +1014,7 @@ function bookSession(){
   if(!booking.serviceId){showToast('Please choose a treatment');return;}
   const date=document.getElementById('bookDate').value;
   if(date){
-    const nowOslo = new Date(new Date().toLocaleString('en-GB', {timeZone:'Europe/Oslo'}));
+    const nowOslo = new Date(new Date().toLocaleString('sv-SE',{timeZone:'Europe/Oslo'}));
     const pickedOslo = new Date(date);
     if(pickedOslo < nowOslo){showToast('Please choose a future date and time');return;}
   }
@@ -1155,7 +1155,7 @@ function renderHistory(){
   if(!state.sessions.length){list.innerHTML='<div class="empty-state"><span class="empty-emoji">🛁</span><div class="empty-text">No sessions yet.<br>Reserve your first one.</div></div>';return;}
   const todayStr=new Date().toLocaleString('sv-SE',{timeZone:'Europe/Oslo'}).slice(0,10);
   // Current Oslo time as a real Date for full datetime comparisons
-  const nowOslo=new Date(new Date().toLocaleString('en-GB',{timeZone:'Europe/Oslo'}));
+  const nowOslo=new Date(new Date().toLocaleString('sv-SE',{timeZone:'Europe/Oslo'}));
 
   const byDateAsc=(a,b)=>new Date(a.date)-new Date(b.date);
   const byDateDesc=(a,b)=>new Date(b.date)-new Date(a.date);
