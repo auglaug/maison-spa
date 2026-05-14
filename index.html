@@ -95,6 +95,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .ptoggle.active{border-color:var(--champagne);background:rgba(201,169,110,0.08);color:var(--cognac);}
 .date-input{width:100%;padding:12px 14px;border:0.5px solid var(--parchment);border-radius:var(--r-sm);font-family:'Jost',sans-serif;font-size:13px;font-weight:300;background:var(--white);color:var(--text);outline:none;margin-bottom:22px;}
 .date-input:focus{border-color:var(--champagne);}
+select.date-input{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239A8070' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:30px;}
 
 /* COLLAPSIBLE TREATMENTS */
 .service-grid{display:flex;flex-direction:column;gap:0;margin-bottom:22px;}
@@ -235,6 +236,14 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .review-chip.amb{background:rgba(139,74,42,0.07);color:var(--text-2);}
 .review-divider{height:0.5px;background:var(--parchment);margin:14px 0;}
 
+/* CALENDAR */
+.cal-day{text-align:center;padding:8px 2px;font-size:13px;font-weight:300;color:var(--text-2);cursor:pointer;border-radius:6px;transition:all .15s;}
+.cal-day:hover{background:rgba(201,169,110,0.12);}
+.cal-day.selected{background:var(--cognac);color:var(--ivory);}
+.cal-day.today{color:var(--cognac);font-weight:500;}
+.cal-day.past{color:var(--parchment);cursor:not-allowed;pointer-events:none;}
+.cal-day.empty{cursor:default;pointer-events:none;}
+
 /* TOAST */
 .toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:var(--cognac);color:var(--ivory);padding:11px 22px;border-radius:99px;font-size:12px;letter-spacing:0.06em;z-index:300;display:none;white-space:nowrap;}
 .toast.show{display:block;}
@@ -320,7 +329,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
       </div>
     </div>
     <div class="home-hero">
-      <div class="hero-eyebrow">This evening</div>
+      <div class="hero-eyebrow" id="heroEyebrow">This evening</div>
       <div class="hero-turn" id="heroTurn">Emma's turn<br>to <em>relax</em></div>
       <div class="hero-sub" id="heroSub">Jonas is your therapist tonight</div>
       <div class="hero-divider"><div class="hero-div-line"></div><div class="hero-div-orn">✦</div><div class="hero-div-line"></div></div>
@@ -354,7 +363,28 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
       <div class="field-label">Choose a treatment</div>
       <div class="service-grid" id="serviceGrid"></div>
       <div class="field-label">Date & time</div>
-      <input type="datetime-local" class="date-input" id="bookDate">
+      <div id="customDatePicker" style="margin-bottom:22px;">
+        <!-- Styled calendar -->
+        <div style="background:rgba(255,255,255,0.5);border:0.5px solid var(--parchment);border-radius:var(--r-sm);padding:16px;margin-bottom:10px;">
+          <!-- Month nav -->
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+            <button onclick="calShiftMonth(-1)" style="background:none;border:none;cursor:pointer;color:var(--text-3);font-size:18px;padding:4px 8px;font-family:'Jost',sans-serif;">‹</button>
+            <div id="calMonthLabel" style="font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:300;color:var(--text);letter-spacing:0.04em;"></div>
+            <button onclick="calShiftMonth(1)" style="background:none;border:none;cursor:pointer;color:var(--text-3);font-size:18px;padding:4px 8px;font-family:'Jost',sans-serif;">›</button>
+          </div>
+          <!-- Day headers populated by JS -->
+          <div id="calDayHeaders" style="display:grid;grid-template-columns:repeat(7,1fr);margin-bottom:6px;"></div>
+          <!-- Days grid -->
+          <div id="calDaysGrid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;"></div>
+        </div>
+        <!-- Time dropdown -->
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div style="font-size:9px;text-transform:uppercase;letter-spacing:0.12em;color:var(--text-3);white-space:nowrap;">Time</div>
+          <select id="bookTimePart" onchange="syncBookDateTime()" style="flex:1;padding:12px 14px;border:0.5px solid var(--parchment);border-radius:var(--r-sm);font-family:'Jost',sans-serif;font-size:14px;font-weight:300;background:var(--white);color:var(--text);outline:none;cursor:pointer;appearance:none;-webkit-appearance:none;background-image:url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2212%22 height=%228%22 viewBox=%220 0 12 8%22%3E%3Cpath d=%22M1 1l5 5 5-5%22 stroke=%22%239A8070%22 stroke-width=%221.5%22 fill=%22none%22 stroke-linecap=%22round%22/%3E%3C/svg%3E');background-repeat:no-repeat;background-position:right 14px center;"></select>
+        </div>
+      </div>
+      <input type="hidden" id="bookDate">
+      <input type="hidden" id="bookDatePart">      <input type="hidden" id="bookDatePart">
       <div id="addonSection" style="display:none;">
         <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:10px;"><div class="field-label" style="color:var(--champagne-2);margin-bottom:0;">Premium add-ons</div><div style="font-size:10px;color:var(--text-3);font-weight:300;">Max 3</div></div>
         <div class="addon-grid" id="addonGrid"></div>
@@ -558,6 +588,21 @@ function getIcon(svc){
 }
 
 
+
+// Always format dates in Oslo time regardless of device timezone
+function osloDate(dateStr){
+  return new Date(dateStr);
+}
+function osloFormat(dateStr, opts){
+  return new Date(dateStr).toLocaleString('en-GB', {...opts, timeZone:'Europe/Oslo'});
+}
+function osloTimeStr(dateStr){
+  return new Date(dateStr).toLocaleTimeString('en-GB', {hour:'2-digit', minute:'2-digit', timeZone:'Europe/Oslo'});
+}
+function osloDateStr(dateStr){
+  return new Date(dateStr).toLocaleDateString('en-GB', {day:'numeric', month:'short', timeZone:'Europe/Oslo'});
+}
+
 // ── STATE ─────────────────────────────────────────────────────────────────────
 let state={
   currentUser:null,
@@ -701,7 +746,7 @@ function goTo(s){
   document.getElementById(s+'Screen').classList.add('active');
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active',n.dataset.screen===s));
   if(s==='home')renderHome();
-  if(s==='book')renderBook();
+  if(s==='book'){window._calSelected=null;renderBook();}
   if(s==='history')renderHistory();
   if(s==='settings')renderSettings();
   if(s==='adminTreatments')renderAdminTreatments();
@@ -715,12 +760,53 @@ function renderHome(){
   const h=new Date().getHours();
   document.getElementById('homeGreeting').textContent=(h<12?'Bonjour':h<18?'Bon après-midi':'Bonsoir')+', '+u;
   document.getElementById('homeAvatar').textContent=u.charAt(0).toUpperCase();
-  const names=Object.values(state.users).map(x=>x.name);
-  let clientTurn=u;
-  if(state.sessions.length){const last=state.sessions[state.sessions.length-1];clientTurn=(last.client===u)?(names.find(n=>n!==u)||u):u;}
-  const therapistTurn=names.find(n=>n!==clientTurn)||clientTurn;
-  document.getElementById('heroTurn').innerHTML=clientTurn+"'s turn<br>to <em>relax</em>";
-  document.getElementById('heroSub').textContent=therapistTurn+' is your therapist tonight';
+  const names=Object.values(state.users).filter((x,i,a)=>a.findIndex(y=>y.name===x.name)===i).map(x=>x.name);
+
+  // Find next upcoming session — include anything today or later
+  const now=new Date();
+  const osloToday = new Date(new Date().toLocaleString('en-GB',{timeZone:'Europe/Oslo'}));
+  const todayStart=new Date(osloToday.getFullYear(),osloToday.getMonth(),osloToday.getDate());
+  const upcoming=state.sessions
+    .filter(s=>{
+      if(s.status!=='confirmed') return false;
+      // Compare using Oslo date string to avoid timezone issues
+      const sessionDateStr=new Date(s.date).toLocaleString('sv-SE',{timeZone:'Europe/Oslo'}).slice(0,10);
+      const todayStr=new Date().toLocaleString('sv-SE',{timeZone:'Europe/Oslo'}).slice(0,10);
+      return sessionDateStr>=todayStr;
+    })
+    .sort((a,b)=>new Date(a.date)-new Date(b.date));
+  const next=upcoming[0];
+
+  if(next){
+    const sessionDate=new Date(next.date);
+    const diffMs=sessionDate-now;
+    const diffDays=Math.floor(diffMs/(1000*60*60*24));
+    const timeStr=sessionDate.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',timeZone:'Europe/Oslo'});
+    let whenStr;
+    if(diffDays===0){
+      if(h<12) whenStr='This morning';
+      else if(h<17) whenStr='This afternoon';
+      else whenStr='This evening';
+    } else if(diffDays===1){
+      whenStr='Tomorrow';
+    } else if(diffDays<=3){
+      whenStr='In '+diffDays+' days';
+    } else {
+      whenStr=sessionDate.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',timeZone:'Europe/Oslo'});
+    }
+    document.getElementById('heroEyebrow').textContent=whenStr+' at '+timeStr;
+    document.getElementById('heroTurn').innerHTML=next.client+"'s turn<br>to <em>relax</em>";
+    document.getElementById('heroSub').textContent=next.therapist+' is your therapist';
+  } else {
+    // No upcoming — show whose turn based on history
+    let clientTurn=u;
+    if(state.sessions.length){const last=state.sessions[state.sessions.length-1];clientTurn=(last.client===u)?(names.find(n=>n!==u)||u):u;}
+    const therapistTurn=names.find(n=>n!==clientTurn)||clientTurn;
+    document.getElementById('heroEyebrow').textContent='Up next';
+    document.getElementById('heroTurn').innerHTML=clientTurn+"'s turn<br>to <em>relax</em>";
+    document.getElementById('heroSub').textContent=therapistTurn+' is your therapist';
+  }
+
   const streak=calcStreak();
   document.getElementById('streakNum').textContent=streak;
   document.getElementById('sessionNum').textContent=state.sessions.length;
@@ -729,15 +815,19 @@ function renderHome(){
   document.getElementById('statAvg').textContent=rated.length?(rated.reduce((a,s)=>a+s.rating,0)/rated.length).toFixed(1):'—';
   document.getElementById('statStreak').textContent=streak;
   const list=document.getElementById('recentList');
-  const recent=[...state.sessions].reverse().slice(0,3);
-  if(!recent.length){list.innerHTML='<div style="padding:0 22px;color:var(--text-3);font-size:13px;font-weight:300;">No sessions yet — reserve your first one.</div>';return;}
-  list.innerHTML=recent.map(s=>{
-    const svc=state.services.find(sv=>sv.id===s.serviceId)||{name:s.serviceName||'Session',id:''};
-    const stars=s.rating?'⭐'.repeat(s.rating):'';
-    const dateStr=s.date?new Date(s.date).toLocaleDateString('en-GB',{day:'numeric',month:'short'}):'';
-    return`<div class="recent-item"><div class="ri-icon">${getIcon(svc)}</div><div><div class="ri-name">${svc.name}</div><div class="ri-meta">${s.client} · ${s.therapist}</div></div><div class="ri-right"><div class="ri-stars">${stars}</div><div class="ri-date">${dateStr}</div></div></div>`;
-  }).join('');
+  const completed=[...state.sessions].filter(s=>s.status==='completed').reverse().slice(0,3);
+  if(!completed.length){
+    list.innerHTML='<div style="padding:0 22px;color:var(--text-3);font-size:13px;font-weight:300;">No completed sessions yet.</div>';
+  } else {
+    list.innerHTML=completed.map(s=>{
+      const svc=state.services.find(sv=>sv.id===s.serviceId)||{name:s.serviceName||'Session',id:''};
+      const stars=s.rating?'⭐'.repeat(s.rating):'';
+      const dateStr=s.date?osloFormat(s.date, {...{day:'numeric',month:'short'}, timeZone:'Europe/Oslo'}):'';
+      return`<div class="recent-item"><div class="ri-icon">${getIcon(svc)}</div><div><div class="ri-name">${svc.name}</div><div class="ri-meta">${s.client} · ${s.therapist}</div></div><div class="ri-right"><div class="ri-stars">${stars}</div><div class="ri-date">${dateStr}</div></div></div>`;
+    }).join('');
+  }
 }
+
 function calcStreak(){
   if(!state.sessions.length)return 0;
   const weeks=new Set(state.sessions.map(s=>{if(!s.date)return null;const d=new Date(s.date),j=new Date(d.getFullYear(),0,1);return Math.ceil(((d-j)/86400000+j.getDay()+1)/7);}).filter(Boolean));
@@ -747,8 +837,7 @@ function calcStreak(){
 // ── BOOK ──────────────────────────────────────────────────────────────────────
 function renderBook(){
   const names=Object.values(state.users).map(u=>u.name),me=state.currentUser;
-  const now=new Date();now.setMinutes(0,0,0);
-  document.getElementById('bookDate').value=now.toISOString().slice(0,16);
+  initCalendar();
   if(!booking.client)booking.client=me;
   if(!booking.therapist&&names.length>1)booking.therapist=names.find(n=>n!==me)||names[0];
   document.getElementById('clientToggle').innerHTML=names.map(n=>`<button class="ptoggle${booking.client===n?' active':''}" onclick="setBooking('client','${n}',this)">${n}</button>`).join('');
@@ -905,19 +994,24 @@ function collectAddonNames(){
 }
 function bookSession(){
   if(!booking.serviceId){showToast('Please choose a treatment');return;}
+  const date=document.getElementById('bookDate').value;
+  if(date){
+    const nowOslo = new Date(new Date().toLocaleString('en-GB', {timeZone:'Europe/Oslo'}));
+    const pickedOslo = new Date(date);
+    if(pickedOslo < nowOslo){showToast('Please choose a future date and time');return;}
+  }
   const svc=state.services.find(s=>s.id===booking.serviceId);
   const addons=collectAddonNames();
   const ambiance=(booking.ambianceSel||[]).map(id=>{const o=state.ambiance.find(a=>a.id===id);return o?o.name:id;});
-  const date=document.getElementById('bookDate').value;
   pendingSession={id:'sess_'+Date.now(),client:booking.client,therapist:booking.therapist,serviceId:booking.serviceId,serviceName:svc.name,date:date||new Date().toISOString(),addons,ambiance,rating:0,notes:'',createdBy:state.currentUser};
   // Show review modal
-  const dateStr=pendingSession.date?new Date(pendingSession.date).toLocaleString('en-GB',{weekday:'long',day:'numeric',month:'long',hour:'2-digit',minute:'2-digit'}):'';
+  const dateStr=pendingSession.date?osloFormat(pendingSession.date, {weekday:'long',day:'numeric',month:'long',hour:'2-digit',minute:'2-digit'}):'';
   document.getElementById('reviewContent').innerHTML=buildReviewHtml(pendingSession);
   document.getElementById('reviewModal').classList.add('open');
 }
 function buildReviewHtml(s){
   const svc=state.services.find(sv=>sv.id===s.serviceId)||{name:s.serviceName};
-  const dateStr=s.date?new Date(s.date).toLocaleString('en-GB',{weekday:'long',day:'numeric',month:'long',hour:'2-digit',minute:'2-digit'}):'';
+  const dateStr=s.date?osloFormat(s.date, {weekday:'long',day:'numeric',month:'long',hour:'2-digit',minute:'2-digit'}):'';
   const ambChips=(s.ambiance||[]).map(a=>`<span class="review-chip amb">${a}</span>`).join('');
   const addChips=(s.addons||[]).map(a=>`<span class="review-chip">${a}</span>`).join('');
   return`
@@ -978,8 +1072,13 @@ function submitRating(){
     saveData().then(()=>renderHistory());showToast('Rating saved ✦');
   }
 }
-
-// ── HISTORY ───────────────────────────────────────────────────────────────────
+function sessionStatusBadge(s){
+  if(s.status==='completed') return`<span style="font-size:9px;background:rgba(139,74,42,0.08);color:var(--cognac);padding:2px 8px;border-radius:99px;letter-spacing:0.06em;">Completed</span>`;
+  if(s.status==='cancelled'||s.status==='declined') return`<span style="font-size:9px;background:var(--ivory-2);color:var(--text-3);padding:2px 8px;border-radius:99px;letter-spacing:0.06em;">Cancelled</span>`;
+  if(s.status==='confirmed') return`<span style="font-size:9px;background:rgba(139,74,42,0.08);color:var(--cognac);padding:2px 8px;border-radius:99px;letter-spacing:0.06em;">Confirmed ✦</span>`;
+  if(s.status==='pending') return`<span style="font-size:9px;background:rgba(201,169,110,0.15);color:var(--champagne-2);padding:2px 8px;border-radius:99px;letter-spacing:0.06em;">Awaiting confirmation</span>`;
+  return`<span style="font-size:9px;background:rgba(201,169,110,0.15);color:var(--champagne-2);padding:2px 8px;border-radius:99px;letter-spacing:0.06em;">Upcoming</span>`;
+}
 function renderHistory(){
   const list=document.getElementById('historyList');
   if(!state.sessions.length){list.innerHTML='<div class="empty-state"><span class="empty-emoji">🛁</span><div class="empty-text">No sessions yet.<br>Reserve your first one.</div></div>';return;}
@@ -990,39 +1089,35 @@ function renderHistory(){
     const sessionDate=new Date(s.date);
     const isPast=sessionDate<now;
     const stars=s.rating?'⭐'.repeat(s.rating):'';
-    const dateStr=s.date?new Date(s.date).toLocaleString('en-GB',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}):'';
-    let statusBadge;
-    if(s.status==='confirmed'){
-      statusBadge=`<span style="font-size:9px;background:rgba(139,74,42,0.08);color:var(--cognac);padding:2px 8px;border-radius:99px;letter-spacing:0.06em;">Confirmed ✦</span>`;
-    } else if(s.status==='declined'){
-      statusBadge=`<span style="font-size:9px;background:var(--ivory-2);color:var(--text-3);padding:2px 8px;border-radius:99px;letter-spacing:0.06em;">Declined</span>`;
-    } else if(s.status==='pending'){
-      statusBadge=`<span style="font-size:9px;background:rgba(201,169,110,0.15);color:var(--champagne-2);padding:2px 8px;border-radius:99px;letter-spacing:0.06em;">Awaiting confirmation</span>`;
-    } else if(isPast){
-      statusBadge=s.rating
-        ?`<span style="font-size:9px;background:rgba(139,74,42,0.08);color:var(--cognac);padding:2px 8px;border-radius:99px;letter-spacing:0.06em;">Completed</span>`
-        :`<span style="font-size:9px;background:var(--ivory-2);color:var(--text-3);padding:2px 8px;border-radius:99px;letter-spacing:0.06em;">Past · Unrated</span>`;
-    } else {
-      statusBadge=`<span style="font-size:9px;background:rgba(201,169,110,0.15);color:var(--champagne-2);padding:2px 8px;border-radius:99px;letter-spacing:0.06em;">Upcoming</span>`;
-    }
+    const dateStr=s.date?osloFormat(s.date, {day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}):'';
+    const badge=sessionStatusBadge(s);
+    const isDone=s.status==='completed'||s.status==='cancelled'||s.status==='declined';
+    const actionBtns=isPast&&!isDone?`<div style="display:flex;gap:8px;margin-top:10px;">
+      <button style="flex:1;padding:9px;background:var(--cognac);color:var(--ivory);border:none;border-radius:var(--r-sm);font-family:'Jost',sans-serif;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;" onclick="markSession('${s.id}','completed')">Mark completed</button>
+      <button style="flex:1;padding:9px;background:none;border:0.5px solid var(--parchment);border-radius:var(--r-sm);font-family:'Jost',sans-serif;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-3);cursor:pointer;" onclick="markSession('${s.id}','cancelled')">Mark cancelled</button>
+    </div>`:'';
     return`<div class="hist-item">
       <div class="hist-top">
-        <div>
-          <div class="hist-service">${svc.name}</div>
-          <div style="margin-top:4px;">${statusBadge}</div>
-        </div>
+        <div><div class="hist-service">${svc.name}</div><div style="margin-top:4px;">${badge}</div></div>
         <div class="hist-date" style="text-align:right;">${dateStr}</div>
       </div>
-      <div class="hist-people" style="margin-top:8px;">${s.client} relaxed · ${s.therapist} therapist</div>
+      <div class="hist-people" style="margin-top:8px;">${s.client} · ${s.therapist}</div>
       ${stars?`<div class="hist-stars" style="margin-top:6px;">${stars}</div>`:''}
       ${s.notes?`<div class="hist-note" style="margin-top:4px;">"${s.notes}"</div>`:''}
-      <div style="display:flex;gap:8px;margin-top:12px;">
+      ${actionBtns}
+      <div style="display:flex;gap:8px;margin-top:8px;">
         <button style="flex:1;padding:9px;background:none;border:0.5px solid var(--parchment);border-radius:var(--r-sm);font-family:'Jost',sans-serif;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-3);cursor:pointer;" onclick="showSessionDetail('${s.id}')">Show details</button>
-        <button style="flex:1;padding:9px;background:none;border:0.5px solid var(--champagne);border-radius:var(--r-sm);font-family:'Jost',sans-serif;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--cognac);cursor:pointer;" onclick="openRatingForSession('${s.id}')">${s.rating?'Edit rating':'Rate session'}</button>
+        ${s.status==='completed'?`<button style="flex:1;padding:9px;background:none;border:0.5px solid var(--champagne);border-radius:var(--r-sm);font-family:'Jost',sans-serif;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--cognac);cursor:pointer;" onclick="openRatingForSession('${s.id}')">${s.rating?'Edit rating':'Rate session'}</button>`:''}
       </div>
     </div>`;
   }).join('');
 }
+function markSession(id, status){
+  const s=state.sessions.find(x=>x.id===id);if(!s)return;
+  s.status=status;saveData();renderHistory();renderHome();
+  showToast(status==='completed'?'Session completed ✦':'Session marked as cancelled');
+}
+window.markSession=markSession;
 function showSessionDetail(sid){
   const s=state.sessions.find(x=>x.id===sid);if(!s)return;
   document.getElementById('detailTitle').textContent='Session details';
@@ -1055,14 +1150,14 @@ function renderSettings(){
 function renderTestSessions(){
   const el=document.getElementById('testSessionList');
   if(!el)return;
-  const pending=state.sessions.filter(s=>s.status==='pending'||!s.status);
+  const pending=state.sessions.filter(s=>s.status==='pending');
   if(!pending.length){
     el.innerHTML='<div style="font-size:12px;color:var(--text-3);font-weight:300;font-style:italic;">No pending sessions to test.</div>';
     return;
   }
   el.innerHTML=pending.map(s=>{
     const svc=state.services.find(sv=>sv.id===s.serviceId)||{name:s.serviceName||'Session'};
-    const dateStr=s.date?new Date(s.date).toLocaleString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):'';
+    const dateStr=s.date?osloFormat(s.date, {day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):'';
     return`<div style="margin-bottom:14px;padding-bottom:14px;border-bottom:0.5px solid var(--ivory-3);">
       <div style="font-size:13px;color:var(--text);margin-bottom:2px;">${svc.name}</div>
       <div style="font-size:11px;color:var(--text-3);font-weight:300;margin-bottom:10px;">${s.client} · ${dateStr}</div>
@@ -1084,13 +1179,33 @@ function testConfirm(sid){
 }
 function testDecline(sid){
   const s=state.sessions.find(x=>x.id===sid);if(!s)return;
+  // Show suggestion sheet
+  document.getElementById('formSheet').innerHTML=`
+    <div class="sheet-handle"></div>
+    <div class="sheet-title" style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:300;">Suggest a new time?</div>
+    <p style="font-size:13px;color:var(--text-3);font-weight:300;line-height:1.7;margin:12px 0 20px;">Optionally suggest an alternative time for ${s.client}. Leave blank to send a plain cancellation.</p>
+    <div class="field">
+      <label>Suggested time <span style="font-weight:300;text-transform:none;letter-spacing:0;">(optional)</span></label>
+      <input type="text" id="declineSuggestion" placeholder="e.g. How about Saturday at 19:00?">
+    </div>
+    <div class="form-btn-row" style="margin-top:16px;">
+      <button class="btn-cancel" onclick="closeForm()">Cancel</button>
+      <button class="btn-save" onclick="confirmDecline('${sid}')">Send decline</button>
+    </div>`;
+  document.getElementById('formModal').classList.add('open');
+}
+function confirmDecline(sid){
+  const s=state.sessions.find(x=>x.id===sid);if(!s)return;
   s.status='declined';
+  s.declineSuggestion=document.getElementById('declineSuggestion').value.trim();
   saveData();
+  closeForm();
   showToast('Declined — sending email to '+s.client+' ✦');
   sendResponseEmail(s,false).catch(e=>console.error('Email error:',e));
   renderTestSessions();
   renderHistory();
 }
+window.confirmDecline=confirmDecline;
 
 // ── ADMIN: TREATMENTS ─────────────────────────────────────────────────────────
 function renderAdminTreatments(){
@@ -1324,6 +1439,119 @@ function saveAmbiance(){
   saveData();closeForm();renderAdminAmbiance();showToast('Option added ✦');
 }
 
+
+// ── CUSTOM CALENDAR PICKER ────────────────────────────────────────────────────
+function initCalendar(){
+  // Time slots
+  window._calTimeSlots=[];
+  for(let h=7;h<=23;h++) for(let m=0;m<60;m+=15)
+    window._calTimeSlots.push(String(h).padStart(2,'0')+':'+String(m).padStart(2,'0'));
+
+  // Default date/time: Oslo now rounded to next 15 min
+  const osloNow=new Date(new Date().toLocaleString('sv-SE',{timeZone:'Europe/Oslo'}));
+  const rMins=Math.ceil(osloNow.getMinutes()/15)*15;
+  osloNow.setMinutes(rMins,0,0);
+  window._calSelected=osloNow.toLocaleString('sv-SE',{timeZone:'Europe/Oslo'}).slice(0,10);
+  window._calYear=parseInt(window._calSelected.slice(0,4));
+  window._calMonth=parseInt(window._calSelected.slice(5,7))-1;
+
+  // Populate time dropdown
+  const sel=document.getElementById('bookTimePart');
+  if(sel){
+    sel.innerHTML=window._calTimeSlots.map(t=>`<option value="${t}">${t}</option>`).join('');
+    const defaultTime=osloNow.toLocaleString('sv-SE',{timeZone:'Europe/Oslo'}).slice(11,16);
+    sel.value=defaultTime;
+    if(!sel.value) sel.value='19:00';
+  }
+  renderCalendar();
+  syncBookDateTime();
+}
+
+function renderCalendar(){
+  const y=window._calYear, m=window._calMonth;
+  const osloTodayStr=new Date(new Date().toLocaleString('sv-SE',{timeZone:'Europe/Oslo'})).toLocaleString('sv-SE',{timeZone:'Europe/Oslo'}).slice(0,10);
+
+  // Month label
+  const monthNames=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const lbl=document.getElementById('calMonthLabel');
+  if(lbl) lbl.textContent=monthNames[m]+' '+y;
+
+  // Day headers
+  const hdrs=document.getElementById('calDayHeaders');
+  if(hdrs&&!hdrs.children.length){
+    ['Mo','Tu','We','Th','Fr','Sa','Su'].forEach(d=>{
+      const el=document.createElement('div');
+      el.style.cssText='text-align:center;font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-3);padding:4px 0;';
+      el.textContent=d;
+      hdrs.appendChild(el);
+    });
+  }
+
+  // Days grid
+  const grid=document.getElementById('calDaysGrid');
+  if(!grid) return;
+
+  const firstDay=new Date(y,m,1).getDay(); // 0=Sun
+  const startOffset=(firstDay===0)?6:firstDay-1; // Mon=0
+  const daysInMonth=new Date(y,m+1,0).getDate();
+
+  let html='';
+  // Empty cells before first day
+  for(let i=0;i<startOffset;i++) html+=`<div class="cal-day empty"></div>`;
+  // Day cells
+  for(let d=1;d<=daysInMonth;d++){
+    const mm=String(m+1).padStart(2,'0');
+    const dd=String(d).padStart(2,'0');
+    const dateStr=`${y}-${mm}-${dd}`;
+    const isPast=dateStr<osloTodayStr;
+    const isSelected=dateStr===window._calSelected;
+    const isToday=dateStr===osloTodayStr;
+    const cls=['cal-day', isPast?'past':'', isSelected?'selected':'', isToday&&!isSelected?'today':''].filter(Boolean).join(' ');
+    const onclick=isPast?'':'calSelectDay(\''+dateStr+'\')';
+    html+=`<div class="${cls}" onclick="${onclick}">${d}</div>`;
+  }
+  grid.innerHTML=html;
+}
+
+function calSelectDay(dateStr){
+  window._calSelected=dateStr;
+  // If today, ensure time is not in past
+  const osloNow=new Date(new Date().toLocaleString('sv-SE',{timeZone:'Europe/Oslo'}));
+  const osloTodayStr=osloNow.toLocaleString('sv-SE',{timeZone:'Europe/Oslo'}).slice(0,10);
+  if(dateStr===osloTodayStr){
+    const sel=document.getElementById('bookTimePart');
+    const nowMins=osloNow.getHours()*60+osloNow.getMinutes();
+    const opts=Array.from(sel.options);
+    const first=opts.find(o=>{const[h,m]=o.value.split(':').map(Number);return h*60+m>=nowMins;});
+    if(first && new Date(dateStr+'T'+sel.value+':00') < new Date()) sel.value=first.value;
+  }
+  renderCalendar();
+  syncBookDateTime();
+}
+
+function calShiftMonth(dir){
+  window._calMonth+=dir;
+  if(window._calMonth>11){window._calMonth=0;window._calYear++;}
+  if(window._calMonth<0){window._calMonth=11;window._calYear--;}
+  // Don't go before current month
+  const osloNow=new Date(new Date().toLocaleString('sv-SE',{timeZone:'Europe/Oslo'}));
+  if(window._calYear<osloNow.getFullYear()||(window._calYear===osloNow.getFullYear()&&window._calMonth<osloNow.getMonth())){
+    window._calYear=osloNow.getFullYear();window._calMonth=osloNow.getMonth();
+  }
+  renderCalendar();
+}
+
+function syncBookDateTime(){
+  const d=window._calSelected;
+  const t=document.getElementById('bookTimePart')?.value||'19:00';
+  document.getElementById('bookDate').value=d+'T'+t;
+  document.getElementById('bookDatePart').value=d;
+}
+
+window.calSelectDay=calSelectDay;
+window.calShiftMonth=calShiftMonth;
+window.syncBookDateTime=syncBookDateTime;
+
 function closeForm(){document.getElementById('formModal').classList.remove('open');}
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
 
@@ -1344,8 +1572,9 @@ function getUserEmail(name){
   return USER_EMAILS[name.toLowerCase()] || '';
 }
 
+
 function buildConfirmEmailHtml(s, svc){
-  const dateStr = new Date(s.date).toLocaleString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'});
+  const dateStr = osloFormat(s.date, {weekday:'long',day:'numeric',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'});
   return `<!DOCTYPE html><html><body style="margin:0;padding:0;background:#F2EDE4;font-family:'Georgia',serif;">
 <table width="100%" cellpadding="0" cellspacing="0" style="background:#F2EDE4;padding:40px 0;">
 <tr><td align="center">
@@ -1392,7 +1621,12 @@ function buildConfirmEmailHtml(s, svc){
 }
 
 function buildCancelEmailHtml(s, svc){
-  const dateStr = new Date(s.date).toLocaleString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'});
+  const dateStr = osloFormat(s.date, {weekday:'long',day:'numeric',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'});
+  const suggestionBlock = s.declineSuggestion ? `
+  <div style="margin-bottom:20px;padding:16px 20px;background:rgba(201,169,110,0.08);border-radius:8px;border-left:2px solid #C9A96E;">
+    <div style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#B8923A;margin-bottom:6px;font-family:'Helvetica Neue',Arial,sans-serif;">Suggested alternative</div>
+    <p style="font-family:'Georgia',serif;font-size:15px;color:#2A1F14;margin:0;font-style:italic;">"${s.declineSuggestion}"</p>
+  </div>` : '';
   return `<!DOCTYPE html><html><body style="margin:0;padding:0;background:#F2EDE4;font-family:'Georgia',serif;">
 <table width="100%" cellpadding="0" cellspacing="0" style="background:#F2EDE4;padding:40px 0;">
 <tr><td align="center">
@@ -1426,6 +1660,7 @@ function buildCancelEmailHtml(s, svc){
       <span style="font-family:'Georgia',serif;font-size:15px;color:#9A8070;text-decoration:line-through;">${dateStr}</span>
     </td></tr>
   </table>
+  ${suggestionBlock}
   <p style="text-align:center;font-size:13px;color:#6B5040;font-family:'Helvetica Neue',Arial,sans-serif;font-weight:300;">Please open the app to choose a new time.<br>Your next ritual awaits.</p>
   <table width="100%" cellpadding="0" cellspacing="0" style="margin-top:20px;"><tr><td align="center">
     <a href="${APP_URL}" style="display:inline-block;color:#8B4A2A;font-family:'Helvetica Neue',Arial,sans-serif;font-size:11px;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:14px 40px;border-radius:6px;border:0.5px solid #8B4A2A;">Open Maison · Spa</a>
@@ -1439,18 +1674,15 @@ function buildCancelEmailHtml(s, svc){
 
 async function sendBookingEmail(session){
   const svc = state.services.find(s=>s.id===session.serviceId)||{name:session.serviceName};
-  const dateStr = new Date(session.date).toLocaleString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'});
+  const dateStr = osloFormat(session.date, {weekday:'long',day:'numeric',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'});
   const therapistEmail = getUserEmail(session.therapist);
   const clientEmail = getUserEmail(session.client);
   if(!therapistEmail){ console.warn('No email for therapist'); return; }
-
   const whoParam = encodeURIComponent(session.therapist);
   const confirmLink = APP_URL + '?action=confirm&id=' + session.id + '&who=' + whoParam;
   const declineLink = APP_URL + '?action=decline&id=' + session.id + '&who=' + whoParam;
-
   const addonsText = (session.addons||[]).join(', ') || 'None';
   const ambianceText = (session.ambiance||[]).join(', ') || 'None';
-
   await emailjs.send(EMAILJS_SERVICE_ID, TEMPLATE_BOOKING, {
     therapist_name:  session.therapist,
     therapist_email: therapistEmail,
@@ -1469,10 +1701,8 @@ async function sendResponseEmail(session, confirmed){
   const svc = state.services.find(s=>s.id===session.serviceId)||{name:session.serviceName};
   const clientEmail = getUserEmail(session.client);
   if(!clientEmail){ console.warn('No email for client'); return; }
-
   const subject = confirmed ? 'Your session is confirmed ✦' : 'Session update from Maison · Spa';
   const messageBody = confirmed ? buildConfirmEmailHtml(session, svc) : buildCancelEmailHtml(session, svc);
-
   await emailjs.send(EMAILJS_SERVICE_ID, TEMPLATE_RESPONSE, {
     client_email: clientEmail,
     subject:      subject,
@@ -1480,17 +1710,14 @@ async function sendResponseEmail(session, confirmed){
   });
 }
 
-// Handle confirm/decline links from email
 function checkEmailAction(){
   const params = new URLSearchParams(window.location.search);
   const action = params.get('action');
   const id     = params.get('id');
   if(!action || !id) return;
-
   loadLocal();
   const s = state.sessions.find(x=>x.id===id);
   if(!s){ showToast('Session not found'); return; }
-
   if(action==='confirm'){
     s.status='confirmed';
     saveData();
@@ -1502,15 +1729,12 @@ function checkEmailAction(){
     sendResponseEmail(s, false).catch(console.error);
     showEmailActionResult('declined', s);
   }
-
-  // Clean URL
   window.history.replaceState({}, '', window.location.pathname);
 }
 
 function showEmailActionResult(action, session){
   const svc = state.services.find(s=>s.id===session.serviceId)||{name:session.serviceName};
   const isConfirm = action==='confirmed';
-  // Show a full-screen result page before the app loads
   document.body.innerHTML = `
     <div style="min-height:100vh;background:#F2EDE4;display:flex;align-items:center;justify-content:center;font-family:'Jost',sans-serif;">
       <div style="background:#FAF6EF;border:0.5px solid #DDD4C4;border-radius:16px;padding:48px 40px;max-width:380px;width:90%;text-align:center;">
@@ -1530,12 +1754,8 @@ function showEmailActionResult(action, session){
       </div>
     </div>`;
 }
-// ── END EMAIL ─────────────────────────────────────────────────────────────────
 
-// Clear any old storage versions on first load
-['maisonspa_v1','maisonspa_v2','maisonspa_v3'].forEach(k=>localStorage.removeItem(k));
-
-// Expose all functions called from onclick attributes to global scope
+if(typeof window.login === 'undefined'){
 window.register = register;
 window.login = login;
 window.showRegister = showRegister;
@@ -1572,13 +1792,17 @@ window.saveEditAddon = saveEditAddon;
 window.renderEditSubChips = renderEditSubChips;
 window.editAmbiance = editAmbiance;
 window.saveEditAmbiance = saveEditAmbiance;
+window.confirmDecline = confirmDecline;
+window.calSelectDay = calSelectDay;
+window.calShiftMonth = calShiftMonth;
+window.syncBookDateTime = syncBookDateTime;
+window.quickLoginForAction = quickLoginForAction;
+}
+
+// Clear old storage versions
+['maisonspa_v1','maisonspa_v2','maisonspa_v3'].forEach(k=>localStorage.removeItem(k));
 
 emailjs.init(EMAILJS_PUBLIC_KEY);
-
-// Check for email confirm/decline action in URL
-const _urlParams = new URLSearchParams(window.location.search);
-const _urlAction = _urlParams.get('action');
-const _urlId = _urlParams.get('id');
 
 {
 const _urlParams = new URLSearchParams(window.location.search);
@@ -1628,7 +1852,6 @@ function handleEmailAction(action, id){
 }
 
 function showEmailLoginPrompt(action, id){
-  // Show a minimal who-are-you screen before handling the action
   document.getElementById('loginScreen').style.display='';
   document.getElementById('loginScreen').classList.add('active');
   document.getElementById('loginCard').innerHTML=`
