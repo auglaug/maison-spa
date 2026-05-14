@@ -614,11 +614,14 @@ function ensureUsers(){
 function applyData(d){
   if(d.users) state.users=d.users;
   if(d.sessions) state.sessions=d.sessions;
-  let svcs=d.services&&d.services.length?d.services:null;
-  if(svcs) svcs=svcs.map(s=>({...s,category:s.category==='Maison Spa Club'?'Maison Spa Club member specials':s.category}));
-  state.services=svcs||JSON.parse(JSON.stringify(DEFAULT_SERVICES));
-  state.addons=d.addons&&d.addons.length?d.addons:JSON.parse(JSON.stringify(DEFAULT_ADDONS));
-  state.ambiance=d.ambiance&&d.ambiance.length?d.ambiance:JSON.parse(JSON.stringify(DEFAULT_AMBIANCE));
+  // Always use latest hardcoded defaults for services/addons/ambiance
+  // unless the user has added custom ones (id starts with 'svc_' or 'X_' or 'Z_')
+  const customSvcs = d.services ? d.services.filter(s=>s.id.startsWith('svc_')) : [];
+  const customAddons = d.addons ? d.addons.filter(a=>a.id.startsWith('X_')) : [];
+  const customAmbiance = d.ambiance ? d.ambiance.filter(a=>a.id.startsWith('Z_')&&!['ZA','ZB','ZC','ZD','ZE','ZF','ZG','ZH'].includes(a.id)) : [];
+  state.services=[...JSON.parse(JSON.stringify(DEFAULT_SERVICES)),...customSvcs];
+  state.addons=[...JSON.parse(JSON.stringify(DEFAULT_ADDONS)),...customAddons];
+  state.ambiance=[...JSON.parse(JSON.stringify(DEFAULT_AMBIANCE)),...customAmbiance];
 }
 function loadLocal(){
   try{
@@ -1524,6 +1527,9 @@ function showEmailActionResult(action, session){
     </div>`;
 }
 // ── END EMAIL ─────────────────────────────────────────────────────────────────
+
+// Clear any old storage versions on first load
+['maisonspa_v1','maisonspa_v2','maisonspa_v3'].forEach(k=>localStorage.removeItem(k));
 
 // Expose all functions called from onclick attributes to global scope
 window.register = register;
