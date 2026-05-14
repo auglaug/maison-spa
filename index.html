@@ -994,20 +994,14 @@ function collectNeeds(session){
   // From treatment
   const svc=state.services.find(s=>s.id===session.serviceId);
   if(svc) addNeeds(svc.needs);
-  // From selected addons — match by name since addonSel may not be on saved sessions
-  const selectedNames=session.addons||[];
+  // Build a flat set of all selected names for fast lookup
+  const selectedNames=new Set(session.addons||[]);
+  // Walk the full addon tree at all levels and collect needs for anything selected
   function walkAddon(addon){
     if(!addon) return;
-    // Check if this addon or any sub was selected
-    const isSelected=selectedNames.some(n=>n===addon.name);
-    if(isSelected) addNeeds(addon.needs);
+    if(selectedNames.has(addon.name)) addNeeds(addon.needs);
     if(addon.subs) addon.subs.forEach(sub=>{
-      if(selectedNames.some(n=>n===sub.name)){
-        addNeeds(sub.needs);
-        if(sub.subs) sub.subs.forEach(ss=>{
-          if(selectedNames.some(n=>n===ss.name)) addNeeds(ss.needs);
-        });
-      }
+      walkAddon(sub);
     });
   }
   state.addons.forEach(a=>walkAddon(a));
