@@ -1165,9 +1165,9 @@ function renderHistory(){
     .filter(s=>s.status==='confirmed' && new Date(s.date)>nowOslo)
     .sort(byDateAsc);
 
-  // ── Pending: awaiting confirmation, date+time in the future ──────────────
+  // ── Pending: awaiting confirmation (all, regardless of date) ─────────────
   const pending=state.sessions
-    .filter(s=>s.status==='pending' && new Date(s.date)>nowOslo)
+    .filter(s=>s.status==='pending')
     .sort(byDateAsc);
 
   // ── Cancelled ─────────────────────────────────────────────────────────────
