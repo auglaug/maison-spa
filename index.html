@@ -769,10 +769,7 @@ function renderHome(){
   const upcoming=state.sessions
     .filter(s=>{
       if(s.status!=='confirmed') return false;
-      // Compare using Oslo date string to avoid timezone issues
-      const sessionDateStr=new Date(s.date).toLocaleString('sv-SE',{timeZone:'Europe/Oslo'}).slice(0,10);
-      const todayStr=new Date().toLocaleString('sv-SE',{timeZone:'Europe/Oslo'}).slice(0,10);
-      return sessionDateStr>=todayStr;
+      return new Date(s.date)>new Date(new Date().toLocaleString('en-GB',{timeZone:'Europe/Oslo'}));
     })
     .sort((a,b)=>new Date(a.date)-new Date(b.date));
   const next=upcoming[0];
@@ -1156,28 +1153,28 @@ window.toggleHistSection=window.toggleHistSection||toggleHistSection;
 function renderHistory(){
   const list=document.getElementById('historyList');
   if(!state.sessions.length){list.innerHTML='<div class="empty-state"><span class="empty-emoji">🛁</span><div class="empty-text">No sessions yet.<br>Reserve your first one.</div></div>';return;}
-  const now=new Date();
   const todayStr=new Date().toLocaleString('sv-SE',{timeZone:'Europe/Oslo'}).slice(0,10);
+  // Current Oslo time as a real Date for full datetime comparisons
+  const nowOslo=new Date(new Date().toLocaleString('en-GB',{timeZone:'Europe/Oslo'}));
 
-  // Sort helpers
   const byDateAsc=(a,b)=>new Date(a.date)-new Date(b.date);
   const byDateDesc=(a,b)=>new Date(b.date)-new Date(a.date);
 
-  // ── Upcoming: confirmed, future ───────────────────────────────────────────
+  // ── Upcoming: confirmed, date+time in the future ──────────────────────────
   const upcoming=state.sessions
-    .filter(s=>s.status==='confirmed'&&new Date(s.date).toLocaleString('sv-SE',{timeZone:'Europe/Oslo'}).slice(0,10)>=todayStr)
+    .filter(s=>s.status==='confirmed' && new Date(s.date)>nowOslo)
     .sort(byDateAsc);
 
-  // ── Pending: awaiting confirmation, future ────────────────────────────────
+  // ── Pending: awaiting confirmation, date+time in the future ──────────────
   const pending=state.sessions
-    .filter(s=>s.status==='pending'&&new Date(s.date).toLocaleString('sv-SE',{timeZone:'Europe/Oslo'}).slice(0,10)>=todayStr)
+    .filter(s=>s.status==='pending' && new Date(s.date)>nowOslo)
     .sort(byDateAsc);
 
-  // ── Previous: past sessions that are confirmed/completed, split rated/unrated
+  // ── Previous: past date+time, confirmed/completed or no status ───────────
   const past=state.sessions
     .filter(s=>{
-      const ds=new Date(s.date).toLocaleString('sv-SE',{timeZone:'Europe/Oslo'}).slice(0,10);
-      return ds<todayStr && (s.status==='confirmed'||s.status==='completed'||!s.status);
+      const isPast=new Date(s.date)<=nowOslo;
+      return isPast && (s.status==='confirmed'||s.status==='completed'||!s.status);
     });
   const unrated=past.filter(s=>!s.rating||s.rating===0).sort(byDateDesc);
   const rated=past.filter(s=>s.rating&&s.rating>0).sort(byDateDesc);
@@ -1187,10 +1184,8 @@ function renderHistory(){
     .filter(s=>s.status==='cancelled'||s.status==='declined')
     .sort(byDateDesc);
 
-  // ── Build HTML ─────────────────────────────────────────────────────────────
   const divider='<div style="height:0.5px;background:var(--parchment);margin:4px 22px 24px;"></div>';
 
-  // Previous section: unrated always visible + rated collapsed
   let prevHtml='';
   if(!unrated.length&&!rated.length){
     prevHtml='<div style="padding:0 22px;color:var(--text-3);font-size:13px;font-weight:300;font-style:italic;">Nothing here yet.</div>';
