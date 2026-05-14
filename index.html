@@ -463,23 +463,23 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 </div>
 
 <script>
-const STORAGE_KEY='maisonspa_v3';
+const STORAGE_KEY='maisonspa_v4';
 const JSONBIN_ID  = '6a050720c0954111d81d3aa2';
 const JSONBIN_KEY = '$2a$10$g.t1puNB5zwKfBP0n.kapuUhoYvLxWCY.YYsX78.1U/OtBQocy.re';
 const JSONBIN_URL = 'https://api.jsonbin.io/v3/b/' + JSONBIN_ID;
 
 const DEFAULT_SERVICES=[
-  {id:'s1',name:'Hunchback of Home Office Recovery',duration:'45 min',category:'The Body & Soul Collection',description:'A targeted deep-tissue neck and shoulder massage designed to undo the structural damage of poor ergonomics and endless video calls. Includes use of essential oils for elevated relaxation.',addons:['XA','XB','XC','XD','XE','XF','XG','XH']},
-  {id:'s2',name:'The "Out of Range" Scalp Ritual',duration:'40 min',category:'The Body & Soul Collection',description:'Hydrating hair mask with a hypnotic scalp massage guaranteed to make you forget your passwords and unread notifications. Airplane mode for your brain.',addons:['XA']},
-  {id:'s3',name:'The "Grounding Force" Pedicure',duration:'50 min',category:'The Body & Soul Collection',description:'A warm botanical foot soak followed by a restorative massage. Perfect for feet that have braved the treacherous journey between the fridge and the sofa.',addons:['XD','XE','XG']},
-  {id:'s4',name:'"I Woke Up Like This" Facial',duration:'35 min',category:'The Glow-Up Department',description:'A luxurious mask treatment accompanied by chilled cucumber compresses. Restores your natural radiance, even if we both know the truth about your sleep schedule.',addons:[]},
-  {id:'s5',name:'Ex-Flake Foot Polish',duration:'40 min',category:'The Glow-Up Department',description:'A bespoke sugar scrub that leaves your skin so smooth you might actually slide out of your shoes.',addons:[]},
-  {id:'s6',name:'The "Midnight Oil" Intimacy Ritual',duration:'60 min',category:'Maison Spa Club member specials',description:'A specialized, slow-tempo massage using a high-sheen, edible massage oil. This treatment transitions seamlessly from therapeutic relaxation to private celebration.',addons:[]},
+  {id:'s1',name:'The "Hunchback of Home Office" Recovery',duration:'45 min',category:'The Body & Soul Collection',description:'A targeted deep-tissue neck and shoulder massage designed to undo the structural damage of poor ergonomics and endless video calls. Includes use of essential oils for elevated relaxation.',addons:['XA','XB','XC','XD','XE','XF','XG','XH','XI','XJ','XK']},
+  {id:'s2',name:'The "Out of Range" Scalp Ritual',duration:'40 min',category:'The Body & Soul Collection',description:'Hydrating hair mask with a hypnotic scalp massage guaranteed to make you forget your passwords and unread notifications. Airplane mode for your brain.',addons:['XA','XB','XC','XD','XE','XF','XG','XH','XI','XJ','XK']},
+  {id:'s3',name:'The "Grounding Force" Pedicure',duration:'50 min',category:'The Body & Soul Collection',description:'A warm botanical foot soak followed by a restorative massage. Perfect for feet that have braved the treacherous journey between the fridge and the sofa.',addons:['XA','XB','XC','XD','XE','XF','XG','XH','XI','XJ','XK']},
+  {id:'s4',name:'The "I Woke Up Like This" Facial',duration:'35 min',category:'The Glow-Up Department',description:'A luxurious mask treatment accompanied by chilled cucumber compresses. Restores your natural radiance, even if we both know the truth about your sleep schedule.',addons:['XA','XB','XC','XD','XE','XF','XG','XH','XI','XJ','XK']},
+  {id:'s5',name:'The "Watch Me" Manicure',duration:'40 min',category:'The Glow-Up Department',description:'A soothing hand massage followed by careful manicure with your choice of color.',addons:['XA','XB','XC','XD','XE','XF','XG','XH','XI','XJ','XK']},
+  {id:'s6',name:'The "Midnight Oil" Intimacy Ritual',duration:'60 min',category:'Maison Spa Club member specials',description:'A specialized, slow-tempo massage using a high-sheen, edible massage oil. This treatment transitions seamlessly from therapeutic relaxation to private celebration.',addons:['XA','XB','XC','XD','XE','XF','XG','XH','XI','XJ','XK']},
 ];
 
 const DEFAULT_ADDONS=[
   {id:'XA',name:'Silent Partner Protocol',desc:'The therapist legally waives the right to mention laundry, dinner plans, or household logistics for a full 60 minutes.',subs:[]},
-  {id:'XB',name:'Liquid Zen Hydration Station',desc:'A curated selection of chilled bubbles or artisan cucumber-infused water. Served strictly while you are in a horizontal position.',subs:[
+  {id:'XB',name:'Liquid Zen Hydration Station',desc:'A curated selection of everything from chilled bubbles to artisan cucumber-infused water. Served strictly while you are in a horizontal position.',subs:[
     {id:'XB1',name:'Herbal tea',desc:'',subs:[
       {id:'XB1A',name:'Chamomile',desc:''},
       {id:'XB1B',name:'Mint',desc:''},
@@ -490,20 +490,31 @@ const DEFAULT_ADDONS=[
     {id:'XB4',name:'Cucumber water',desc:''},
     {id:'XB5',name:'Smoothie',desc:''},
   ]},
-  {id:'XC',name:'Warm Hug Towel Service',desc:'Steamed towels delivered at peak relaxation. Like a hug, but at 40°C and significantly more professional.',subs:[]},
-  {id:'XD',name:'Glowrious You-Time',desc:'LED therapy',subs:[]},
-  {id:'XE',name:'Digital Detox',desc:'',subs:[]},
-  {id:'XF',name:'Under Eye Mask',desc:'',subs:[]},
+  {id:'XC',name:'Towel Service',desc:'Steamed towels delivered at peak relaxation or a refreshing cleansing kick when you need it.',subs:[
+    {id:'XC1',name:'Hot towel',desc:''},
+    {id:'XC2',name:'Cold towel',desc:''},
+  ]},
+  {id:'XD',name:'Glowrious You-Time',desc:'LED facial therapy',subs:[]},
+  {id:'XE',name:'Digital Detox',desc:'No disturbances, no fuzz',subs:[]},
+  {id:'XF',name:'Under Eye Mask',desc:'Rejuvenate while being pampered',subs:[]},
   {id:'XG',name:'Kuchisabishii — Lonely Mouth',desc:'',subs:[
     {id:'XG1',name:'Fresh nibbles',desc:''},
     {id:'XG2',name:'Sinful snack platter',desc:"Calories don't count at the spa"},
+    {id:'XG3',name:'Golden bends',desc:''},
   ]},
-  {id:'XH',name:'Essential Oils',desc:'',subs:[
+  {id:'XH',name:'Essential Oils',desc:'Select up to 1',subs:[
     {id:'XH1',name:'Lavender dream',desc:''},
     {id:'XH2',name:'Eucalyptus tranquility',desc:''},
     {id:'XH3',name:'Spa heaven',desc:''},
     {id:'XH4',name:'Forest sanctuary',desc:''},
     {id:'XH5',name:'Grapefruit & bergamot energy',desc:''},
+  ]},
+  {id:'XI',name:'Eucalyptus shower',desc:'',subs:[]},
+  {id:'XJ',name:'Post treatment glow mist',desc:'',subs:[]},
+  {id:'XK',name:'Miniature massage',desc:'',subs:[
+    {id:'XK1',name:'Scalp massage — 5 min',desc:''},
+    {id:'XK2',name:'Hand massage — 5 min',desc:''},
+    {id:'XK3',name:'Foot massage — 5 min',desc:''},
   ]},
 ];
 
@@ -512,7 +523,10 @@ const DEFAULT_AMBIANCE=[
   {id:'ZB',name:'Candles'},
   {id:'ZC',name:'Dim lights'},
   {id:'ZD',name:'Lavender pillow mist'},
-  {id:'ZE',name:'Cool towels'},
+  {id:'ZE',name:'Sounds of the rainforest'},
+  {id:'ZF',name:'Spa music'},
+  {id:'ZG',name:'Whale sounds'},
+  {id:'ZH',name:'Sounds of the sea'},
 ];
 
 const CAT_ORDER=['The Body & Soul Collection','The Glow-Up Department','Maison Spa Club member specials'];
@@ -814,7 +828,7 @@ function renderAddons(){
 }
 function buildSubsHtml(subs, parentId){
   // XB = drinks (radio), XH = oils (radio), XG = snacks (radio), XB1 = tea flavours (radio)
-  const isRadio=(parentId==='XH'||parentId==='XB'||parentId==='XG'||parentId==='XB1');
+  const isRadio=(parentId==='XH'||parentId==='XB'||parentId==='XG'||parentId==='XB1'||parentId==='XC'||parentId==='XK');
   const anyDrinkSel = parentId==='XB' ? subs.some(s=>booking.addonSel[s.id]) : false;
   let out='<div class="addon-subs">';
   subs.forEach(s=>{
@@ -1082,10 +1096,50 @@ function renderAdminTreatments(){
         ${s.description?`<div class="admin-item-meta" style="font-style:italic;margin-top:2px;">${s.description}</div>`:''}
         ${s.addons&&s.addons.length?`<div class="admin-item-meta" style="margin-top:4px;color:var(--champagne-2);">Add-ons: ${s.addons.join(', ')}</div>`:''}
       </div>
-      <button class="admin-del" onclick="deleteTreatment(${i})">✕</button>
+      <div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0;">
+        <button class="admin-del" style="color:var(--champagne-2);font-size:13px;" onclick="editTreatment(${i})">✎</button>
+        <button class="admin-del" onclick="deleteTreatment(${i})">✕</button>
+      </div>
     </div>`).join('');
 }
-function deleteTreatment(i){state.services.splice(i,1);saveLocal();renderAdminTreatments();showToast('Treatment removed ✦');}
+function deleteTreatment(i){state.services.splice(i,1);saveData();renderAdminTreatments();showToast('Treatment removed ✦');}
+function editTreatment(i){
+  const s=state.services[i];
+  const addonCheckboxes=state.addons.map(a=>`
+    <div class="cb-item${s.addons&&s.addons.includes(a.id)?' checked':''}" data-id="${a.id}" onclick="this.classList.toggle('checked');this.querySelector('.cb-box').textContent=this.classList.contains('checked')?'✓':'';">
+      <div class="cb-box">${s.addons&&s.addons.includes(a.id)?'✓':''}</div>
+      <span class="cb-label">${a.name}</span>
+      <span style="font-size:10px;color:var(--text-3);margin-left:auto;">${a.id}</span>
+    </div>`).join('');
+  document.getElementById('formSheet').innerHTML=`
+    <div class="sheet-handle"></div>
+    <h3>Edit treatment</h3>
+    <div class="field"><label>Name</label><input type="text" id="ftName" value="${s.name.replace(/"/g,'&quot;')}"></div>
+    <div class="field"><label>Duration</label><input type="text" id="ftDuration" value="${s.duration}"></div>
+    <div class="field"><label>Category</label>
+      <select id="ftCat">
+        <option${s.category==='The Body & Soul Collection'?' selected':''}>The Body & Soul Collection</option>
+        <option${s.category==='The Glow-Up Department'?' selected':''}>The Glow-Up Department</option>
+        <option${s.category==='Maison Spa Club member specials'?' selected':''}>Maison Spa Club member specials</option>
+      </select>
+    </div>
+    <div class="field"><label>Description</label><textarea id="ftDesc">${s.description||''}</textarea></div>
+    <div class="field"><label>Available add-ons</label>
+      <div class="checkbox-list">${addonCheckboxes}</div>
+    </div>
+    <div class="form-btn-row" style="margin-top:16px;">
+      <button class="btn-cancel" onclick="closeForm()">Cancel</button>
+      <button class="btn-save" onclick="saveEditTreatment(${i})">Save changes</button>
+    </div>`;
+  document.getElementById('formModal').classList.add('open');
+}
+function saveEditTreatment(i){
+  const name=document.getElementById('ftName').value.trim();
+  if(!name){showToast('Please enter a name');return;}
+  const addons=[...document.querySelectorAll('.cb-item.checked')].map(el=>el.dataset.id);
+  state.services[i]={...state.services[i],name,duration:document.getElementById('ftDuration').value.trim(),category:document.getElementById('ftCat').value,description:document.getElementById('ftDesc').value.trim(),addons};
+  saveData();closeForm();renderAdminTreatments();showToast('Treatment saved ✦');
+}
 function openAddTreatment(){
   document.getElementById('formSheet').innerHTML=`
     <div class="sheet-handle"></div>
@@ -1128,10 +1182,53 @@ function renderAdminAddons(){
         ${a.desc?`<div class="admin-item-meta" style="font-style:italic;">${a.desc}</div>`:''}
         ${a.subs&&a.subs.length?`<div class="admin-item-meta" style="margin-top:3px;">Sub-options: ${a.subs.map(s=>s.name+(s.desc?' — '+s.desc:'')).join(', ')}</div>`:''}
       </div>
-      <button class="admin-del" onclick="deleteAddon(${i})">✕</button>
+      <div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0;">
+        <button class="admin-del" style="color:var(--champagne-2);font-size:13px;" onclick="editAddon(${i})">✎</button>
+        <button class="admin-del" onclick="deleteAddon(${i})">✕</button>
+      </div>
     </div>`).join('');
 }
 function deleteAddon(i){state.addons.splice(i,1);saveData();renderAdminAddons();showToast('Add-on removed ✦');}
+function editAddon(i){
+  const a=state.addons[i];
+  tempSubs=[...a.subs.map(s=>({...s}))];
+  document.getElementById('formSheet').innerHTML=`
+    <div class="sheet-handle"></div>
+    <h3>Edit add-on</h3>
+    <div class="field"><label>Name</label><input type="text" id="faName" value="${a.name.replace(/"/g,'&quot;')}"></div>
+    <div class="field"><label>Description <span style="font-weight:300;text-transform:none;letter-spacing:0;">(optional)</span></label>
+      <textarea id="faDesc">${a.desc||''}</textarea>
+    </div>
+    <div class="field">
+      <label>Sub-options</label>
+      <div class="sub-chip-row" id="subChipRow"></div>
+      <div class="sub-add-row">
+        <input type="text" id="faSubName" placeholder="Sub-option name">
+        <input type="text" id="faSubDesc" placeholder="Description (optional)">
+        <button class="btn-small" onclick="addSubOpt()">Add</button>
+      </div>
+    </div>
+    <div class="form-btn-row" style="margin-top:16px;">
+      <button class="btn-cancel" onclick="closeForm()">Cancel</button>
+      <button class="btn-save" onclick="saveEditAddon(${i})">Save changes</button>
+    </div>`;
+  renderEditSubChips();
+  document.getElementById('formModal').classList.add('open');
+}
+function renderEditSubChips(){
+  const row=document.getElementById('subChipRow');
+  if(!row)return;
+  row.innerHTML=tempSubs.map((s,i)=>`
+    <div class="sub-chip">${s.name}${s.desc?` <em style="font-size:10px;color:var(--text-3);">— ${s.desc}</em>`:''}
+      <button onclick="tempSubs.splice(${i},1);renderEditSubChips();">×</button>
+    </div>`).join('');
+}
+function saveEditAddon(i){
+  const name=document.getElementById('faName').value.trim();
+  if(!name){showToast('Please enter a name');return;}
+  state.addons[i]={...state.addons[i],name,desc:document.getElementById('faDesc').value.trim(),subs:[...tempSubs]};
+  saveData();closeForm();renderAdminAddons();showToast('Add-on saved ✦');
+}
 function openAddAddon(){
   tempSubs=[];
   document.getElementById('formSheet').innerHTML=`
@@ -1178,10 +1275,31 @@ function renderAdminAmbiance(){
   document.getElementById('adminAmbianceList').innerHTML=state.ambiance.map((a,i)=>`
     <div class="admin-item">
       <div class="admin-item-info"><div class="admin-item-name">${a.name}</div></div>
-      <button class="admin-del" onclick="deleteAmbiance(${i})">✕</button>
+      <div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0;">
+        <button class="admin-del" style="color:var(--champagne-2);font-size:13px;" onclick="editAmbiance(${i})">✎</button>
+        <button class="admin-del" onclick="deleteAmbiance(${i})">✕</button>
+      </div>
     </div>`).join('');
 }
 function deleteAmbiance(i){state.ambiance.splice(i,1);saveData();renderAdminAmbiance();showToast('Removed ✦');}
+function editAmbiance(i){
+  const a=state.ambiance[i];
+  document.getElementById('formSheet').innerHTML=`
+    <div class="sheet-handle"></div>
+    <h3>Edit ambiance option</h3>
+    <div class="field"><label>Name</label><input type="text" id="fambName" value="${a.name.replace(/"/g,'&quot;')}"></div>
+    <div class="form-btn-row" style="margin-top:16px;">
+      <button class="btn-cancel" onclick="closeForm()">Cancel</button>
+      <button class="btn-save" onclick="saveEditAmbiance(${i})">Save changes</button>
+    </div>`;
+  document.getElementById('formModal').classList.add('open');
+}
+function saveEditAmbiance(i){
+  const name=document.getElementById('fambName').value.trim();
+  if(!name){showToast('Please enter a name');return;}
+  state.ambiance[i]={...state.ambiance[i],name};
+  saveData();closeForm();renderAdminAmbiance();showToast('Option saved ✦');
+}
 function openAddAmbiance(){
   document.getElementById('formSheet').innerHTML=`
     <div class="sheet-handle"></div>
@@ -1437,6 +1555,13 @@ window.deleteAmbiance = deleteAmbiance;
 window.closeForm = closeForm;
 window.testConfirm = testConfirm;
 window.testDecline = testDecline;
+window.editTreatment = editTreatment;
+window.saveEditTreatment = saveEditTreatment;
+window.editAddon = editAddon;
+window.saveEditAddon = saveEditAddon;
+window.renderEditSubChips = renderEditSubChips;
+window.editAmbiance = editAmbiance;
+window.saveEditAmbiance = saveEditAmbiance;
 
 emailjs.init(EMAILJS_PUBLIC_KEY);
 checkEmailAction();
