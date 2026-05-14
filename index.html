@@ -499,52 +499,52 @@ const JSONBIN_KEY = '$2a$10$g.t1puNB5zwKfBP0n.kapuUhoYvLxWCY.YYsX78.1U/OtBQocy.r
 const JSONBIN_URL = 'https://api.jsonbin.io/v3/b/' + JSONBIN_ID;
 
 const DEFAULT_SERVICES=[
-  {id:'s1',name:'The "Hunchback of Home Office" Recovery',duration:'45 min',category:'The Body & Soul Collection',description:'A targeted deep-tissue neck and shoulder massage designed to undo the structural damage of poor ergonomics and endless video calls. Includes use of essential oils for elevated relaxation.',addons:['XA','XB','XC','XD','XE','XF','XG','XH','XI','XJ','XK']},
-  {id:'s2',name:'The "Out of Range" Scalp Ritual',duration:'40 min',category:'The Body & Soul Collection',description:'Hydrating hair mask with a hypnotic scalp massage guaranteed to make you forget your passwords and unread notifications. Airplane mode for your brain.',addons:['XA','XB','XC','XD','XE','XF','XG','XH','XI','XJ','XK']},
-  {id:'s3',name:'The "Grounding Force" Pedicure',duration:'50 min',category:'The Body & Soul Collection',description:'A warm botanical foot soak followed by a restorative massage. Perfect for feet that have braved the treacherous journey between the fridge and the sofa.',addons:['XA','XB','XC','XD','XE','XF','XG','XH','XI','XJ','XK']},
-  {id:'s4',name:'The "I Woke Up Like This" Facial',duration:'35 min',category:'The Glow-Up Department',description:'A luxurious mask treatment accompanied by chilled cucumber compresses. Restores your natural radiance, even if we both know the truth about your sleep schedule.',addons:['XA','XB','XC','XD','XE','XF','XG','XH','XI','XJ','XK']},
-  {id:'s5',name:'The "Watch Me" Manicure',duration:'40 min',category:'The Glow-Up Department',description:'A soothing hand massage followed by careful manicure with your choice of color.',addons:['XA','XB','XC','XD','XE','XF','XG','XH','XI','XJ','XK']},
-  {id:'s6',name:'The "Midnight Oil" Intimacy Ritual',duration:'60 min',category:'Maison Spa Club member specials',description:'A specialized, slow-tempo massage using a high-sheen, edible massage oil. This treatment transitions seamlessly from therapeutic relaxation to private celebration.',addons:['XA','XB','XC','XD','XE','XF','XG','XH','XI','XJ','XK']},
+  {id:'s1',name:'The "Hunchback of Home Office" Recovery',duration:'45 min',category:'The Body & Soul Collection',description:'A targeted deep-tissue neck and shoulder massage designed to undo the structural damage of poor ergonomics and endless video calls. Includes use of essential oils for elevated relaxation.',addons:['XA','XB','XC','XD','XE','XF','XG','XH','XI','XJ','XK'],needs:'Massage oil, towel, comfortable surface to lie on'},
+  {id:'s2',name:'The "Out of Range" Scalp Ritual',duration:'40 min',category:'The Body & Soul Collection',description:'Hydrating hair mask with a hypnotic scalp massage guaranteed to make you forget your passwords and unread notifications. Airplane mode for your brain.',addons:['XA','XB','XC','XD','XE','XF','XG','XH','XI','XJ','XK'],needs:'Hair mask or nourishing scalp oil, towel for hair, comb'},
+  {id:'s3',name:'The "Grounding Force" Pedicure',duration:'50 min',category:'The Body & Soul Collection',description:'A warm botanical foot soak followed by a restorative massage. Perfect for feet that have braved the treacherous journey between the fridge and the sofa.',addons:['XA','XB','XC','XD','XE','XF','XG','XH','XI','XJ','XK'],needs:'Foot basin with warm water, foot soak salts, foot cream, nail file, pumice stone'},
+  {id:'s4',name:'The "I Woke Up Like This" Facial',duration:'35 min',category:'The Glow-Up Department',description:'A luxurious mask treatment accompanied by chilled cucumber compresses. Restores your natural radiance, even if we both know the truth about your sleep schedule.',addons:['XA','XB','XC','XD','XE','XF','XG','XH','XI','XJ','XK'],needs:'Face mask, cucumber (sliced and chilled), headband, cleanser, moisturiser'},
+  {id:'s5',name:'The "Watch Me" Manicure',duration:'40 min',category:'The Glow-Up Department',description:'A soothing hand massage followed by careful manicure with your choice of color.',addons:['XA','XB','XC','XD','XE','XF','XG','XH','XI','XJ','XK'],needs:'Hand cream, nail polish (client choice), nail file, buffer, base coat, top coat, cotton pads, nail polish remover'},
+  {id:'s6',name:'The "Midnight Oil" Intimacy Ritual',duration:'60 min',category:'Maison Spa Club member specials',description:'A specialized, slow-tempo massage using a high-sheen, edible massage oil. This treatment transitions seamlessly from therapeutic relaxation to private celebration.',addons:['XA','XB','XC','XD','XE','XF','XG','XH','XI','XJ','XK'],needs:'Edible massage oil, candles, soft lighting, clean sheets'},
 ];
 
 const DEFAULT_ADDONS=[
-  {id:'XA',name:'Silent Partner Protocol',desc:'The therapist legally waives the right to mention laundry, dinner plans, or household logistics for a full 60 minutes.',subs:[]},
-  {id:'XB',name:'Liquid Zen Hydration Station',desc:'A curated selection of everything from chilled bubbles to artisan cucumber-infused water. Served strictly while you are in a horizontal position.',subs:[
-    {id:'XB1',name:'Herbal tea',desc:'',subs:[
-      {id:'XB1A',name:'Chamomile',desc:''},
-      {id:'XB1B',name:'Mint',desc:''},
-      {id:'XB1C',name:'Ginger',desc:''},
+  {id:'XA',name:'Silent Partner Protocol',desc:'The therapist legally waives the right to mention laundry, dinner plans, or household logistics for a full 60 minutes.',needs:'',subs:[]},
+  {id:'XB',name:'Liquid Zen Hydration Station',desc:'A curated selection of everything from chilled bubbles to artisan cucumber-infused water. Served strictly while you are in a horizontal position.',needs:'Serving tray, glass',subs:[
+    {id:'XB1',name:'Herbal tea',desc:'',needs:'Kettle, mug',subs:[
+      {id:'XB1A',name:'Chamomile',desc:'',needs:'Chamomile tea bags'},
+      {id:'XB1B',name:'Mint',desc:'',needs:'Mint tea bags'},
+      {id:'XB1C',name:'Ginger',desc:'',needs:'Ginger tea bags'},
     ]},
-    {id:'XB2',name:'Crémant',desc:''},
-    {id:'XB3',name:'Rosé',desc:''},
-    {id:'XB4',name:'Cucumber water',desc:''},
-    {id:'XB5',name:'Smoothie',desc:''},
+    {id:'XB2',name:'Crémant',desc:'',needs:'Chilled Crémant, champagne flute'},
+    {id:'XB3',name:'Rosé',desc:'',needs:'Chilled Rosé, wine glass'},
+    {id:'XB4',name:'Cucumber water',desc:'',needs:'Cucumber, cold water, glass with ice'},
+    {id:'XB5',name:'Smoothie',desc:'',needs:'Smoothie ingredients, blender, glass'},
   ]},
-  {id:'XC',name:'Towel Service',desc:'Steamed towels delivered at peak relaxation or a refreshing cleansing kick when you need it.',subs:[
-    {id:'XC1',name:'Hot towel',desc:''},
-    {id:'XC2',name:'Cold towel',desc:''},
+  {id:'XC',name:'Towel Service',desc:'Steamed towels delivered at peak relaxation or a refreshing cleansing kick when you need it.',needs:'Clean towels',subs:[
+    {id:'XC1',name:'Hot towel',desc:'',needs:'Steamer or hot water for warming towel'},
+    {id:'XC2',name:'Cold towel',desc:'',needs:'Towel chilled in fridge or with ice water'},
   ]},
-  {id:'XD',name:'Glowrious You-Time',desc:'LED facial therapy',subs:[]},
-  {id:'XE',name:'Digital Detox',desc:'No disturbances, no fuzz',subs:[]},
-  {id:'XF',name:'Under Eye Mask',desc:'Rejuvenate while being pampered',subs:[]},
-  {id:'XG',name:'Kuchisabishii — Lonely Mouth',desc:'',subs:[
-    {id:'XG1',name:'Fresh nibbles',desc:''},
-    {id:'XG2',name:'Sinful snack platter',desc:"Calories don't count at the spa"},
-    {id:'XG3',name:'Golden bends',desc:''},
+  {id:'XD',name:'Glowrious You-Time',desc:'LED facial therapy',needs:'LED therapy device, fully charged',subs:[]},
+  {id:'XE',name:'Digital Detox',desc:'No disturbances, no fuzz',needs:'',subs:[]},
+  {id:'XF',name:'Under Eye Mask',desc:'Rejuvenate while being pampered',needs:'Under eye mask patches (chilled if possible)',subs:[]},
+  {id:'XG',name:'Kuchisabishii — Lonely Mouth',desc:'',needs:'Small plate and napkin',subs:[
+    {id:'XG1',name:'Fresh nibbles',desc:'',needs:'Fresh fruit, nuts or light snacks'},
+    {id:'XG2',name:'Sinful snack platter',desc:"Calories don't count at the spa",needs:'Chocolate, crisps, indulgent treats'},
+    {id:'XG3',name:'Golden bends',desc:'',needs:'Golden bends snack'},
   ]},
-  {id:'XH',name:'Essential Oils',desc:'Select up to 1',subs:[
-    {id:'XH1',name:'Lavender dream',desc:''},
-    {id:'XH2',name:'Eucalyptus tranquility',desc:''},
-    {id:'XH3',name:'Spa heaven',desc:''},
-    {id:'XH4',name:'Forest sanctuary',desc:''},
-    {id:'XH5',name:'Grapefruit & bergamot energy',desc:''},
+  {id:'XH',name:'Essential Oils',desc:'Select up to 1',needs:'Diffuser or oil burner',subs:[
+    {id:'XH1',name:'Lavender dream',desc:'',needs:'Lavender essential oil'},
+    {id:'XH2',name:'Eucalyptus tranquility',desc:'',needs:'Eucalyptus essential oil'},
+    {id:'XH3',name:'Spa heaven',desc:'',needs:'Spa blend essential oil'},
+    {id:'XH4',name:'Forest sanctuary',desc:'',needs:'Pine or cedarwood essential oil'},
+    {id:'XH5',name:'Grapefruit & bergamot energy',desc:'',needs:'Grapefruit and bergamot essential oils'},
   ]},
-  {id:'XI',name:'Eucalyptus shower',desc:'',subs:[]},
-  {id:'XJ',name:'Post treatment glow mist',desc:'',subs:[]},
-  {id:'XK',name:'Miniature massage',desc:'',subs:[
-    {id:'XK1',name:'Scalp massage — 5 min',desc:''},
-    {id:'XK2',name:'Hand massage — 5 min',desc:''},
-    {id:'XK3',name:'Foot massage — 5 min',desc:''},
+  {id:'XI',name:'Eucalyptus shower',desc:'',needs:'Fresh or dried eucalyptus branch for shower steam',subs:[]},
+  {id:'XJ',name:'Post treatment glow mist',desc:'',needs:'Face or body mist spray',subs:[]},
+  {id:'XK',name:'Miniature massage',desc:'',needs:'Massage oil or lotion',subs:[
+    {id:'XK1',name:'Scalp massage — 5 min',desc:'',needs:'Scalp massage oil (optional)'},
+    {id:'XK2',name:'Hand massage — 5 min',desc:'',needs:'Hand cream'},
+    {id:'XK3',name:'Foot massage — 5 min',desc:'',needs:'Foot cream'},
   ]},
 ];
 
@@ -987,6 +987,33 @@ function toggleAmb(id,el){
 }
 
 // ── BOOK SESSION ──────────────────────────────────────────────────────────────
+
+function collectNeeds(session){
+  const needs=new Set();
+  function addNeeds(n){ if(n) n.split(',').map(s=>s.trim()).filter(Boolean).forEach(s=>needs.add(s)); }
+  // From treatment
+  const svc=state.services.find(s=>s.id===session.serviceId);
+  if(svc) addNeeds(svc.needs);
+  // From selected addons — match by name since addonSel may not be on saved sessions
+  const selectedNames=session.addons||[];
+  function walkAddon(addon){
+    if(!addon) return;
+    // Check if this addon or any sub was selected
+    const isSelected=selectedNames.some(n=>n===addon.name);
+    if(isSelected) addNeeds(addon.needs);
+    if(addon.subs) addon.subs.forEach(sub=>{
+      if(selectedNames.some(n=>n===sub.name)){
+        addNeeds(sub.needs);
+        if(sub.subs) sub.subs.forEach(ss=>{
+          if(selectedNames.some(n=>n===ss.name)) addNeeds(ss.needs);
+        });
+      }
+    });
+  }
+  state.addons.forEach(a=>walkAddon(a));
+  return [...needs];
+}
+
 function collectAddonNames(){
   const names=[];
   function walk(list){list.forEach(a=>{if(booking.addonSel[a.id]){names.push(a.name);if(a.subs)walk(a.subs);}});}
@@ -1003,7 +1030,7 @@ function bookSession(){
   const svc=state.services.find(s=>s.id===booking.serviceId);
   const addons=collectAddonNames();
   const ambiance=(booking.ambianceSel||[]).map(id=>{const o=state.ambiance.find(a=>a.id===id);return o?o.name:id;});
-  pendingSession={id:'sess_'+Date.now(),client:booking.client,therapist:booking.therapist,serviceId:booking.serviceId,serviceName:svc.name,date:date||new Date().toISOString(),addons,ambiance,rating:0,notes:'',createdBy:state.currentUser};
+  pendingSession={id:'sess_'+Date.now(),client:booking.client,therapist:booking.therapist,serviceId:booking.serviceId,serviceName:svc.name,date:date||new Date().toISOString(),addons,ambiance,addonSel:{...booking.addonSel},rating:0,notes:'',createdBy:state.currentUser};
   // Show review modal
   const dateStr=pendingSession.date?osloFormat(pendingSession.date, {weekday:'long',day:'numeric',month:'long',hour:'2-digit',minute:'2-digit'}):'';
   document.getElementById('reviewContent').innerHTML=buildReviewHtml(pendingSession);
@@ -1079,38 +1106,119 @@ function sessionStatusBadge(s){
   if(s.status==='pending') return`<span style="font-size:9px;background:rgba(201,169,110,0.15);color:var(--champagne-2);padding:2px 8px;border-radius:99px;letter-spacing:0.06em;">Awaiting confirmation</span>`;
   return`<span style="font-size:9px;background:rgba(201,169,110,0.15);color:var(--champagne-2);padding:2px 8px;border-radius:99px;letter-spacing:0.06em;">Upcoming</span>`;
 }
+
+function renderHistoryCard(s, showMarkBtns){
+  const svc=state.services.find(sv=>sv.id===s.serviceId)||{name:s.serviceName||'Session',id:''};
+  const stars=s.rating?'⭐'.repeat(s.rating):'';
+  const dateStr=s.date?osloFormat(s.date,{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}):'';
+  const badge=sessionStatusBadge(s);
+  const isDone=s.status==='completed'||s.status==='cancelled'||s.status==='declined';
+  const markBtns=showMarkBtns&&!isDone?`<div style="display:flex;gap:8px;margin-top:10px;">
+    <button style="flex:1;padding:9px;background:var(--cognac);color:var(--ivory);border:none;border-radius:var(--r-sm);font-family:'Jost',sans-serif;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;" onclick="markSession('${s.id}','completed')">Mark completed</button>
+    <button style="flex:1;padding:9px;background:none;border:0.5px solid var(--parchment);border-radius:var(--r-sm);font-family:'Jost',sans-serif;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-3);cursor:pointer;" onclick="markSession('${s.id}','cancelled')">Mark cancelled</button>
+  </div>`:'';
+  return`<div class="hist-item">
+    <div class="hist-top">
+      <div><div class="hist-service">${svc.name}</div><div style="margin-top:4px;">${badge}</div></div>
+      <div class="hist-date" style="text-align:right;">${dateStr}</div>
+    </div>
+    <div class="hist-people" style="margin-top:8px;">${s.client} · ${s.therapist}</div>
+    ${stars?`<div class="hist-stars" style="margin-top:6px;">${stars}</div>`:''}
+    ${s.notes?`<div class="hist-note" style="margin-top:4px;">"${s.notes}"</div>`:''}
+    ${markBtns}
+    <div style="display:flex;gap:8px;margin-top:8px;">
+      <button style="flex:1;padding:9px;background:none;border:0.5px solid var(--parchment);border-radius:var(--r-sm);font-family:'Jost',sans-serif;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-3);cursor:pointer;" onclick="showSessionDetail('${s.id}')">Show details</button>
+      ${s.status==='completed'?`<button style="flex:1;padding:9px;background:none;border:0.5px solid var(--champagne);border-radius:var(--r-sm);font-family:'Jost',sans-serif;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--cognac);cursor:pointer;" onclick="openRatingForSession('${s.id}')">${s.rating?'Edit rating':'Rate session'}</button>`:''}
+    </div>
+  </div>`;
+}
+
+function historySection(title, sessions, showMarkBtns, collapsed){
+  if(!sessions.length) return`<div style="margin-bottom:24px;"><div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;color:var(--text);padding:0 22px;margin-bottom:12px;">${title}</div><div style="padding:0 22px;color:var(--text-3);font-size:13px;font-weight:300;font-style:italic;">Nothing here yet.</div></div>`;
+  const id='sect_'+title.replace(/\s/g,'_');
+  const cards=sessions.map(s=>renderHistoryCard(s,showMarkBtns)).join('');
+  if(collapsed){
+    return`<div style="margin-bottom:24px;">
+      <div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;color:var(--text);padding:0 22px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;" onclick="toggleHistSection('${id}')">
+        <span>${title} <span style="font-size:13px;color:var(--text-3);font-weight:300;">(${sessions.length})</span></span>
+        <span id="${id}_arrow" style="font-size:12px;color:var(--champagne-2);margin-right:22px;">▼</span>
+      </div>
+      <div id="${id}" style="display:none;">${cards}</div>
+    </div>`;
+  }
+  return`<div style="margin-bottom:24px;"><div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;color:var(--text);padding:0 22px;margin-bottom:12px;">${title}</div>${cards}</div>`;
+}
+
+function toggleHistSection(id){
+  const el=document.getElementById(id);
+  const arrow=document.getElementById(id+'_arrow');
+  if(!el)return;
+  const open=el.style.display!=='none';
+  el.style.display=open?'none':'block';
+  if(arrow) arrow.style.transform=open?'':'rotate(180deg)';
+}
+window.toggleHistSection=window.toggleHistSection||toggleHistSection;
+
 function renderHistory(){
   const list=document.getElementById('historyList');
   if(!state.sessions.length){list.innerHTML='<div class="empty-state"><span class="empty-emoji">🛁</span><div class="empty-text">No sessions yet.<br>Reserve your first one.</div></div>';return;}
   const now=new Date();
-  const sorted=[...state.sessions].sort((a,b)=>new Date(b.date)-new Date(a.date));
-  list.innerHTML=sorted.map(s=>{
-    const svc=state.services.find(sv=>sv.id===s.serviceId)||{name:s.serviceName||'Session',id:''};
-    const sessionDate=new Date(s.date);
-    const isPast=sessionDate<now;
-    const stars=s.rating?'⭐'.repeat(s.rating):'';
-    const dateStr=s.date?osloFormat(s.date, {day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}):'';
-    const badge=sessionStatusBadge(s);
-    const isDone=s.status==='completed'||s.status==='cancelled'||s.status==='declined';
-    const actionBtns=isPast&&!isDone?`<div style="display:flex;gap:8px;margin-top:10px;">
-      <button style="flex:1;padding:9px;background:var(--cognac);color:var(--ivory);border:none;border-radius:var(--r-sm);font-family:'Jost',sans-serif;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;" onclick="markSession('${s.id}','completed')">Mark completed</button>
-      <button style="flex:1;padding:9px;background:none;border:0.5px solid var(--parchment);border-radius:var(--r-sm);font-family:'Jost',sans-serif;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-3);cursor:pointer;" onclick="markSession('${s.id}','cancelled')">Mark cancelled</button>
-    </div>`:'';
-    return`<div class="hist-item">
-      <div class="hist-top">
-        <div><div class="hist-service">${svc.name}</div><div style="margin-top:4px;">${badge}</div></div>
-        <div class="hist-date" style="text-align:right;">${dateStr}</div>
+  const todayStr=new Date().toLocaleString('sv-SE',{timeZone:'Europe/Oslo'}).slice(0,10);
+
+  // Sort helpers
+  const byDateAsc=(a,b)=>new Date(a.date)-new Date(b.date);
+  const byDateDesc=(a,b)=>new Date(b.date)-new Date(a.date);
+
+  // ── Upcoming: confirmed, future ───────────────────────────────────────────
+  const upcoming=state.sessions
+    .filter(s=>s.status==='confirmed'&&new Date(s.date).toLocaleString('sv-SE',{timeZone:'Europe/Oslo'}).slice(0,10)>=todayStr)
+    .sort(byDateAsc);
+
+  // ── Pending: awaiting confirmation, future ────────────────────────────────
+  const pending=state.sessions
+    .filter(s=>s.status==='pending'&&new Date(s.date).toLocaleString('sv-SE',{timeZone:'Europe/Oslo'}).slice(0,10)>=todayStr)
+    .sort(byDateAsc);
+
+  // ── Previous: past sessions that are confirmed/completed, split rated/unrated
+  const past=state.sessions
+    .filter(s=>{
+      const ds=new Date(s.date).toLocaleString('sv-SE',{timeZone:'Europe/Oslo'}).slice(0,10);
+      return ds<todayStr && (s.status==='confirmed'||s.status==='completed'||!s.status);
+    });
+  const unrated=past.filter(s=>!s.rating||s.rating===0).sort(byDateDesc);
+  const rated=past.filter(s=>s.rating&&s.rating>0).sort(byDateDesc);
+
+  // ── Cancelled ─────────────────────────────────────────────────────────────
+  const cancelled=state.sessions
+    .filter(s=>s.status==='cancelled'||s.status==='declined')
+    .sort(byDateDesc);
+
+  // ── Build HTML ─────────────────────────────────────────────────────────────
+  const divider='<div style="height:0.5px;background:var(--parchment);margin:4px 22px 24px;"></div>';
+
+  // Previous section: unrated always visible + rated collapsed
+  let prevHtml='';
+  if(!unrated.length&&!rated.length){
+    prevHtml='<div style="padding:0 22px;color:var(--text-3);font-size:13px;font-weight:300;font-style:italic;">Nothing here yet.</div>';
+  } else {
+    if(unrated.length) prevHtml+=unrated.map(s=>renderHistoryCard(s,true)).join('');
+    if(rated.length){
+      const ratedId='sect_rated_prev';
+      prevHtml+=`<div style="padding:0 22px;margin-top:8px;">
+        <div style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:10px 0;" onclick="toggleHistSection('${ratedId}')">
+          <span style="font-size:11px;color:var(--text-3);letter-spacing:0.08em;">Show all previous (${rated.length})</span>
+          <span id="${ratedId}_arrow" style="font-size:10px;color:var(--champagne-2);">▼</span>
+        </div>
       </div>
-      <div class="hist-people" style="margin-top:8px;">${s.client} · ${s.therapist}</div>
-      ${stars?`<div class="hist-stars" style="margin-top:6px;">${stars}</div>`:''}
-      ${s.notes?`<div class="hist-note" style="margin-top:4px;">"${s.notes}"</div>`:''}
-      ${actionBtns}
-      <div style="display:flex;gap:8px;margin-top:8px;">
-        <button style="flex:1;padding:9px;background:none;border:0.5px solid var(--parchment);border-radius:var(--r-sm);font-family:'Jost',sans-serif;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-3);cursor:pointer;" onclick="showSessionDetail('${s.id}')">Show details</button>
-        ${s.status==='completed'?`<button style="flex:1;padding:9px;background:none;border:0.5px solid var(--champagne);border-radius:var(--r-sm);font-family:'Jost',sans-serif;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--cognac);cursor:pointer;" onclick="openRatingForSession('${s.id}')">${s.rating?'Edit rating':'Rate session'}</button>`:''}
-      </div>
-    </div>`;
-  }).join('');
+      <div id="${ratedId}" style="display:none;">${rated.map(s=>renderHistoryCard(s,false)).join('')}</div>`;
+    }
+  }
+
+  list.innerHTML=
+    historySection('Upcoming',upcoming,false,false)+divider+
+    historySection('Pending acceptance',pending,false,false)+divider+
+    `<div style="margin-bottom:24px;"><div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;color:var(--text);padding:0 22px;margin-bottom:12px;">Previous</div>${prevHtml}</div>`+divider+
+    historySection('Cancelled',cancelled,false,true);
 }
 function markSession(id, status){
   const s=state.sessions.find(x=>x.id===id);if(!s)return;
@@ -1245,6 +1353,7 @@ function editTreatment(i){
       </select>
     </div>
     <div class="field"><label>Description</label><textarea id="ftDesc">${s.description||''}</textarea></div>
+    <div class="field"><label>What is needed <span style="font-weight:300;text-transform:none;letter-spacing:0;">(comma separated)</span></label><input type="text" id="ftNeeds" value="${(s.needs||[]).join(', ')}"></div>
     <div class="field"><label>Available add-ons</label>
       <div class="checkbox-list">${addonCheckboxes}</div>
     </div>
@@ -1258,7 +1367,9 @@ function saveEditTreatment(i){
   const name=document.getElementById('ftName').value.trim();
   if(!name){showToast('Please enter a name');return;}
   const addons=[...document.querySelectorAll('.cb-item.checked')].map(el=>el.dataset.id);
-  state.services[i]={...state.services[i],name,duration:document.getElementById('ftDuration').value.trim(),category:document.getElementById('ftCat').value,description:document.getElementById('ftDesc').value.trim(),addons};
+  const needsRaw2=document.getElementById('ftNeeds')?document.getElementById('ftNeeds').value.trim():'';
+  const needs2=needsRaw2?needsRaw2.split(',').map(n=>n.trim()).filter(Boolean):[];
+  state.services[i]={...state.services[i],name,duration:document.getElementById('ftDuration').value.trim(),category:document.getElementById('ftCat').value,description:document.getElementById('ftDesc').value.trim(),addons,needs:needs2};
   saveData();closeForm();renderAdminTreatments();showToast('Treatment saved ✦');
 }
 function openAddTreatment(){
@@ -1271,6 +1382,7 @@ function openAddTreatment(){
       <select id="ftCat"><option>The Body & Soul Collection</option><option>The Glow-Up Department</option><option>Maison Spa Club member specials</option></select>
     </div>
     <div class="field"><label>Description</label><textarea id="ftDesc" placeholder="What does this treatment involve?"></textarea></div>
+    <div class="field"><label>What is needed <span style="font-weight:300;text-transform:none;letter-spacing:0;">(comma separated)</span></label><input type="text" id="ftNeeds" placeholder="e.g. Massage oil, Towel, Face mask"></div>
     <div class="field"><label>Available add-ons</label>
       <div class="checkbox-list">${state.addons.map(a=>`
         <div class="cb-item" data-id="${a.id}" onclick="this.classList.toggle('checked');this.querySelector('.cb-box').textContent=this.classList.contains('checked')?'✓':'';">
@@ -1290,7 +1402,9 @@ function saveTreatment(){
   const name=document.getElementById('ftName').value.trim();
   if(!name){showToast('Please enter a name');return;}
   const addons=[...document.querySelectorAll('.cb-item.checked')].map(el=>el.dataset.id);
-  state.services.push({id:'svc_'+Date.now(),name,duration:document.getElementById('ftDuration').value.trim()||'30 min',category:document.getElementById('ftCat').value,description:document.getElementById('ftDesc').value.trim(),addons});
+  const needsRaw=document.getElementById('ftNeeds')?document.getElementById('ftNeeds').value.trim():'';
+  const needs=needsRaw?needsRaw.split(',').map(n=>n.trim()).filter(Boolean):[];
+  state.services.push({id:'svc_'+Date.now(),name,duration:document.getElementById('ftDuration').value.trim()||'30 min',category:document.getElementById('ftCat').value,description:document.getElementById('ftDesc').value.trim(),addons,needs});
   saveData();closeForm();renderAdminTreatments();showToast('Treatment added ✦');
 }
 
@@ -1320,6 +1434,9 @@ function editAddon(i){
     <div class="field"><label>Description <span style="font-weight:300;text-transform:none;letter-spacing:0;">(optional)</span></label>
       <textarea id="faDesc">${a.desc||''}</textarea>
     </div>
+    <div class="field"><label>What is needed <span style="font-weight:300;text-transform:none;letter-spacing:0;">(optional, comma separated)</span></label>
+      <input type="text" id="faNeeds" value="${(a.needs||[]).join(', ')}">
+    </div>
     <div class="field">
       <label>Sub-options</label>
       <div class="sub-chip-row" id="subChipRow"></div>
@@ -1347,7 +1464,10 @@ function renderEditSubChips(){
 function saveEditAddon(i){
   const name=document.getElementById('faName').value.trim();
   if(!name){showToast('Please enter a name');return;}
-  state.addons[i]={...state.addons[i],name,desc:document.getElementById('faDesc').value.trim(),subs:[...tempSubs]};
+  const faNeedsEl2=document.getElementById('faNeeds');
+  const faNeedsVal2=faNeedsEl2?faNeedsEl2.value.trim():'';
+  const faNeeds2=faNeedsVal2?faNeedsVal2.split(',').map(n=>n.trim()).filter(Boolean):[];
+  state.addons[i]={...state.addons[i],name,desc:document.getElementById('faDesc').value.trim(),needs:faNeeds2,subs:[...tempSubs]};
   saveData();closeForm();renderAdminAddons();showToast('Add-on saved ✦');
 }
 function openAddAddon(){
@@ -1358,6 +1478,9 @@ function openAddAddon(){
     <div class="field"><label>Name</label><input type="text" id="faName" placeholder="e.g. Hot stone upgrade"></div>
     <div class="field"><label>Description <span style="font-weight:300;text-transform:none;letter-spacing:0;">(optional)</span></label>
       <textarea id="faDesc" placeholder="Short description shown under the name in the booking screen"></textarea>
+    </div>
+    <div class="field"><label>What is needed <span style="font-weight:300;text-transform:none;letter-spacing:0;">(optional, comma separated)</span></label>
+      <input type="text" id="faNeeds" placeholder="e.g. Essential oil, Diffuser">
     </div>
     <div class="field">
       <label>Sub-options <span style="font-weight:300;text-transform:none;letter-spacing:0;">(optional)</span></label>
@@ -1387,7 +1510,10 @@ function addSubOpt(){
 function saveAddon(){
   const name=document.getElementById('faName').value.trim();
   if(!name){showToast('Please enter a name');return;}
-  state.addons.push({id:'X_'+Date.now(),name,desc:document.getElementById('faDesc').value.trim(),subs:[...tempSubs]});
+  const faNeedsEl=document.getElementById('faNeeds');
+  const faNeedsVal=faNeedsEl?faNeedsEl.value.trim():'';
+  const faNeeds=faNeedsVal?faNeedsVal.split(',').map(n=>n.trim()).filter(Boolean):[];
+  state.addons.push({id:'X_'+Date.now(),name,desc:document.getElementById('faDesc').value.trim(),needs:faNeeds,subs:[...tempSubs]});
   saveData();closeForm();renderAdminAddons();showToast('Add-on added ✦');
 }
 
@@ -1573,6 +1699,7 @@ function getUserEmail(name){
 }
 
 
+
 function buildConfirmEmailHtml(s, svc){
   const dateStr = osloFormat(s.date, {weekday:'long',day:'numeric',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'});
   return `<!DOCTYPE html><html><body style="margin:0;padding:0;background:#F2EDE4;font-family:'Georgia',serif;">
@@ -1683,6 +1810,12 @@ async function sendBookingEmail(session){
   const declineLink = APP_URL + '?action=decline&id=' + session.id + '&who=' + whoParam;
   const addonsText = (session.addons||[]).join(', ') || 'None';
   const ambianceText = (session.ambiance||[]).join(', ') || 'None';
+  const needsList = collectNeeds(session);
+  const needsHtml = needsList.length
+    ? '<table width="100%" cellpadding="0" cellspacing="0" style="margin-top:8px;">'
+      + needsList.map(n=>`<tr><td style="padding:5px 0;border-bottom:0.5px solid #F2EDE4;font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;color:#2A1F14;font-weight:300;">· ${n}</td></tr>`).join('')
+      + '</table>'
+    : '<p style="font-family:Helvetica Neue,Arial,sans-serif;font-size:13px;color:#9A8070;font-style:italic;">Nothing extra needed for this session.</p>';
   await emailjs.send(EMAILJS_SERVICE_ID, TEMPLATE_BOOKING, {
     therapist_name:  session.therapist,
     therapist_email: therapistEmail,
@@ -1692,6 +1825,7 @@ async function sendBookingEmail(session){
     datetime:        dateStr,
     addons:          addonsText,
     ambiance:        ambianceText,
+    needs_list:      needsHtml,
     confirm_link:    confirmLink,
     decline_link:    declineLink,
   });
