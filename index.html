@@ -644,8 +644,7 @@ async function loadBin(){
     }
     const j=await r.json();
     if(j&&j.record) applyData(j.record);
-    const local=JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}');
-    state.currentUser=local.currentUser||null;
+    // Never overwrite currentUser from bin — it's device-local
     ensureUsers();
     saveLocal();
     return true;
@@ -1445,8 +1444,9 @@ async function sendBookingEmail(session){
   const clientEmail = getUserEmail(session.client);
   if(!therapistEmail){ console.warn('No email for therapist'); return; }
 
-  const confirmLink = APP_URL + '?action=confirm&id=' + session.id;
-  const declineLink = APP_URL + '?action=decline&id=' + session.id;
+  const whoParam = encodeURIComponent(session.therapist);
+  const confirmLink = APP_URL + '?action=confirm&id=' + session.id + '&who=' + whoParam;
+  const declineLink = APP_URL + '?action=decline&id=' + session.id + '&who=' + whoParam;
 
   const addonsText = (session.addons||[]).join(', ') || 'None';
   const ambianceText = (session.ambiance||[]).join(', ') || 'None';
@@ -1574,14 +1574,79 @@ window.editAmbiance = editAmbiance;
 window.saveEditAmbiance = saveEditAmbiance;
 
 emailjs.init(EMAILJS_PUBLIC_KEY);
-checkEmailAction();
-if(!document.body.innerHTML.includes("Open app")){
-  loadLocal();
+
+// Check for email confirm/decline action in URL
+const _urlParams = new URLSearchParams(window.location.search);
+const _urlAction = _urlParams.get('action');
+const _urlId = _urlParams.get('id');
+
+{
+const _urlParams = new URLSearchParams(window.location.search);
+const _urlAction = _urlParams.get('action');
+const _urlId = _urlParams.get('id');
+const _urlWho = _urlParams.get('who');
+
+loadLocal();
+
+if(_urlAction && _urlId){
+  if(_urlWho){
+    const whoNorm = _urlWho.toLowerCase().replace(/ø/g,'o').replace(/ö/g,'o').replace(/æ/g,'ae').replace(/å/g,'a');
+    const whoUser = state.users[_urlWho.toLowerCase()] || state.users[whoNorm] ||
+      Object.values(state.users).find(u=>u.name.toLowerCase()===_urlWho.toLowerCase()) ||
+      Object.values(state.users).find(u=>u.name.toLowerCase().replace(/ø/g,'o')===whoNorm);
+    state.currentUser = whoUser ? whoUser.name : _urlWho;
+    saveLocal();
+    loadBin().then(()=>{ handleEmailAction(_urlAction, _urlId); });
+  } else if(state.currentUser){
+    loadBin().then(()=>{ handleEmailAction(_urlAction, _urlId); });
+  } else {
+    showEmailLoginPrompt(_urlAction, _urlId);
+  }
+} else {
   if(state.currentUser){
     loginSuccess();
     loadBin().then(synced=>{ if(synced) renderHome(); });
   }
 }
+}
+
+function handleEmailAction(action, id){
+  window.history.replaceState({}, '', window.location.pathname);
+  const s = state.sessions.find(x=>x.id===id);
+  if(!s){ showToast('Session not found'); loginSuccess(); return; }
+  if(action==='confirm'){
+    s.status='confirmed';
+    saveData();
+    sendResponseEmail(s, true).catch(console.error);
+    showEmailActionResult('confirmed', s);
+  } else if(action==='decline'){
+    s.status='declined';
+    saveData();
+    sendResponseEmail(s, false).catch(console.error);
+    showEmailActionResult('declined', s);
+  }
+}
+
+function showEmailLoginPrompt(action, id){
+  // Show a minimal who-are-you screen before handling the action
+  document.getElementById('loginScreen').style.display='';
+  document.getElementById('loginScreen').classList.add('active');
+  document.getElementById('loginCard').innerHTML=`
+    <h2 style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;margin-bottom:20px;color:var(--text);">Who are you?</h2>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
+      <button class="ptoggle" style="padding:14px;" onclick="quickLoginForAction('Majken','${action}','${id}')">Majken</button>
+      <button class="ptoggle" style="padding:14px;" onclick="quickLoginForAction('Rønnaug','${action}','${id}')">Rønnaug</button>
+    </div>
+  `;
+}
+
+async function quickLoginForAction(name, action, id){
+  state.currentUser = name;
+  saveLocal();
+  await loadBin();
+  handleEmailAction(action, id);
+}
+window.quickLoginForAction = quickLoginForAction;
 </script>
 </body>
 </html>
