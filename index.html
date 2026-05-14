@@ -745,10 +745,10 @@ function goTo(s){
   ['home','book','history','settings','adminTreatments','adminAddons','adminAmbiance'].forEach(x=>document.getElementById(x+'Screen').classList.remove('active'));
   document.getElementById(s+'Screen').classList.add('active');
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active',n.dataset.screen===s));
-  if(s==='home')renderHome();
+  if(s==='home'){renderHome();loadBin().then(ok=>{if(ok)renderHome();});}
   if(s==='book'){window._calSelected=null;renderBook();}
-  if(s==='history')renderHistory();
-  if(s==='settings')renderSettings();
+  if(s==='history'){renderHistory();loadBin().then(ok=>{if(ok)renderHistory();});}
+  if(s==='settings'){renderSettings();loadBin().then(ok=>{if(ok)renderSettings();});}
   if(s==='adminTreatments')renderAdminTreatments();
   if(s==='adminAddons')renderAdminAddons();
   if(s==='adminAmbiance')renderAdminAmbiance();
