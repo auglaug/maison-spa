@@ -295,6 +295,19 @@ select.date-input{appearance:none;-webkit-appearance:none;background-image:url("
   </div>
 </div>
 
+<!-- CONFIRM MODAL -->
+<div class="modal-overlay" id="confirmModal">
+  <div class="review-sheet" style="padding:28px 24px 36px;">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title" id="confirmModalTitle" style="font-size:20px;margin-bottom:8px;">Are you sure?</div>
+    <div id="confirmModalMsg" style="font-size:13px;color:var(--text-3);font-weight:300;line-height:1.6;margin-bottom:24px;"></div>
+    <div class="form-btn-row">
+      <button class="btn-cancel" onclick="document.getElementById('confirmModal').classList.remove('open')">Cancel</button>
+      <button class="btn-save" id="confirmModalOk" style="background:#c0392b;">Delete</button>
+    </div>
+  </div>
+</div>
+
 <!-- ADD FORM MODAL -->
 <div class="form-modal" id="formModal">
   <div class="form-sheet" id="formSheet"></div>
@@ -441,6 +454,13 @@ select.date-input{appearance:none;-webkit-appearance:none;background-image:url("
         <div class="config-label">Sync</div>
         <div class="config-card">
           <div class="config-info">Data is shared between Majken and Rønnaug via JSONBin and cached locally.</div>
+        </div>
+      </div>
+      <div class="config-section" style="margin-top:16px;">
+        <div class="config-label">Data</div>
+        <div class="config-card">
+          <div class="config-info" style="margin-bottom:12px;">Permanently delete all session history. Useful for clearing test data.</div>
+          <button class="btn-logout" style="border-color:#c0392b;color:#c0392b;" onclick="clearAllSessions()">Delete all sessions</button>
         </div>
       </div>
       <div class="config-section" style="margin-top:16px;">
@@ -1123,6 +1143,7 @@ function renderHistoryCard(s, showMarkBtns){
     <div style="display:flex;gap:8px;margin-top:8px;">
       <button style="flex:1;padding:9px;background:none;border:0.5px solid var(--parchment);border-radius:var(--r-sm);font-family:'Jost',sans-serif;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-3);cursor:pointer;" onclick="showSessionDetail('${s.id}')">Show details</button>
       ${s.status==='completed'?`<button style="flex:1;padding:9px;background:none;border:0.5px solid var(--champagne);border-radius:var(--r-sm);font-family:'Jost',sans-serif;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--cognac);cursor:pointer;" onclick="openRatingForSession('${s.id}')">${s.rating?'Edit rating':'Rate session'}</button>`:''}
+      <button style="padding:9px 12px;background:none;border:0.5px solid var(--parchment);border-radius:var(--r-sm);font-family:'Jost',sans-serif;font-size:14px;color:var(--parchment);cursor:pointer;flex-shrink:0;" onclick="deleteSession('${s.id}')" title="Delete session">✕</button>
     </div>
   </div>`;
 }
@@ -1217,6 +1238,22 @@ function markSession(id, status){
   showToast(status==='completed'?'Session completed ✦':'Session marked as cancelled');
 }
 window.markSession=markSession;
+function deleteSession(id){
+  showConfirm('Delete session','This session will be permanently deleted and cannot be recovered.',()=>{
+    state.sessions=state.sessions.filter(x=>x.id!==id);
+    saveData();renderHistory();renderHome();
+    showToast('Session deleted');
+  });
+}
+window.deleteSession=deleteSession;
+function clearAllSessions(){
+  showConfirm('Delete all sessions','All session history will be permanently deleted. This cannot be undone.',()=>{
+    state.sessions=[];
+    saveData();renderSettings();renderHome();
+    showToast('All sessions deleted');
+  });
+}
+window.clearAllSessions=clearAllSessions;
 function showSessionDetail(sid){
   const s=state.sessions.find(x=>x.id===sid);if(!s)return;
   document.getElementById('detailTitle').textContent='Session details';
@@ -1670,6 +1707,17 @@ window.calShiftMonth=calShiftMonth;
 window.syncBookDateTime=syncBookDateTime;
 
 function closeForm(){document.getElementById('formModal').classList.remove('open');}
+function showConfirm(title, msg, onOk){
+  document.getElementById('confirmModalTitle').textContent=title;
+  document.getElementById('confirmModalMsg').textContent=msg;
+  const btn=document.getElementById('confirmModalOk');
+  btn.onclick=()=>{
+    document.getElementById('confirmModal').classList.remove('open');
+    onOk();
+  };
+  document.getElementById('confirmModal').classList.add('open');
+}
+window.showConfirm=showConfirm;
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
 
 
