@@ -749,7 +749,10 @@ function loginSuccess(){
   ls.classList.remove('active');
   ls.style.display='none';
   document.getElementById('bottomNav').style.display='flex';
-  goTo('home');
+  // Restore last screen, but only main nav screens (not admin sub-screens)
+  const validScreens=['home','book','history','settings'];
+  const lastScreen=localStorage.getItem('maisonspa_screen');
+  goTo(validScreens.includes(lastScreen)?lastScreen:'home');
 }
 function logout(){
   state.currentUser=null;saveLocal();
@@ -765,6 +768,8 @@ function goTo(s){
   ['home','book','history','settings','adminTreatments','adminAddons','adminAmbiance'].forEach(x=>document.getElementById(x+'Screen').classList.remove('active'));
   document.getElementById(s+'Screen').classList.add('active');
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active',n.dataset.screen===s));
+  // Remember which screen we're on
+  try{localStorage.setItem('maisonspa_screen', s);}catch(e){}
   if(s==='home'){renderHome();loadBin().then(ok=>{if(ok)renderHome();});}
   if(s==='book'){window._calSelected=null;renderBook();}
   if(s==='history'){
@@ -1235,7 +1240,12 @@ function renderHistory(){
 function markSession(id, status){
   const s=state.sessions.find(x=>x.id===id);if(!s)return;
   s.status=status;saveData();renderHistory();renderHome();
-  showToast(status==='completed'?'Session completed ✦':'Session marked as cancelled');
+  if(status==='completed'){
+    showToast('Session completed ✦');
+    sendRatingReminderEmail(s).catch(e=>console.error('Reminder email error:',e));
+  } else {
+    showToast('Session marked as cancelled');
+  }
 }
 window.markSession=markSession;
 function deleteSession(id){
@@ -1739,6 +1749,72 @@ function getUserEmail(name){
 
 
 
+
+function buildRatingReminderHtml(s, svc){
+  const dateStr = osloFormat(s.date, {weekday:'long',day:'numeric',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'});
+  return `<!DOCTYPE html><html><body style="margin:0;padding:0;background:#F2EDE4;font-family:'Georgia',serif;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#F2EDE4;padding:40px 0;">
+<tr><td align="center">
+<table width="520" cellpadding="0" cellspacing="0" style="max-width:520px;width:100%;">
+<tr><td align="center" style="padding:0 0 32px 0;">
+  <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="24" cy="24" r="22" fill="#F9F5EE" stroke="#DDD4C4" stroke-width="1"/>
+    <circle cx="24" cy="24" r="20" stroke="#8B4A2A" stroke-width="0.8"/>
+    <path d="M13 32 L13 18 L24 27 L35 18 L35 32" stroke="#8B4A2A" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <path d="M17 32 L31 32" stroke="#C9A96E" stroke-width="0.9" stroke-linecap="round"/>
+  </svg>
+  <br><br>
+  <span style="font-family:'Georgia',serif;font-size:28px;color:#2A1F14;letter-spacing:4px;">MAISON</span>
+  <span style="font-family:'Georgia',serif;font-size:20px;color:#8B4A2A;"> · </span>
+  <span style="font-family:'Georgia',serif;font-size:28px;color:#2A1F14;letter-spacing:4px;">SPA</span><br>
+  <span style="font-size:10px;color:#9A8070;letter-spacing:6px;text-transform:uppercase;">Votre retraite privée</span>
+  <table width="100%" cellpadding="0" cellspacing="0" style="margin-top:24px;"><tr>
+    <td style="border-bottom:0.5px solid #C9A96E;width:45%;"></td>
+    <td align="center" style="width:10%;padding-bottom:4px;"><span style="color:#C9A96E;">✦</span></td>
+    <td style="border-bottom:0.5px solid #C9A96E;width:45%;"></td>
+  </tr></table>
+</td></tr>
+<tr><td style="background:#FAF6EF;border:0.5px solid #DDD4C4;border-radius:16px;padding:40px 48px;">
+  <table cellpadding="0" cellspacing="0" style="margin-bottom:24px;"><tr>
+    <td style="background:rgba(201,169,110,0.12);border-radius:99px;padding:6px 18px;">
+      <span style="font-size:10px;letter-spacing:3px;text-transform:uppercase;color:#B8923A;font-family:'Helvetica Neue',Arial,sans-serif;">How was your session?</span>
+    </td>
+  </tr></table>
+  <h1 style="margin:0 0 20px 0;font-family:'Georgia',serif;font-size:26px;font-weight:normal;color:#2A1F14;">Bonjour <em style="color:#8B4A2A;">${s.client}</em>,</h1>
+  <p style="margin:0 0 24px 0;font-size:14px;color:#6B5040;line-height:1.8;font-family:'Helvetica Neue',Arial,sans-serif;font-weight:300;">
+    We hope your session left you feeling utterly cherished. Your ritual with <strong style="font-weight:normal;color:#2A1F14;">${s.therapist}</strong> has been completed — and we would love to know how it went.
+  </p>
+  <table width="100%" cellpadding="0" cellspacing="0" style="border-top:0.5px solid #E8E0D4;padding-top:20px;margin-bottom:28px;">
+    <tr><td style="padding:10px 0;border-bottom:0.5px solid #F2EDE4;">
+      <span style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#B8923A;display:block;margin-bottom:4px;font-family:'Helvetica Neue',Arial,sans-serif;">Treatment</span>
+      <span style="font-family:'Georgia',serif;font-size:15px;color:#2A1F14;">${svc.name}</span>
+    </td></tr>
+    <tr><td style="padding:10px 0;">
+      <span style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#B8923A;display:block;margin-bottom:4px;font-family:'Helvetica Neue',Arial,sans-serif;">Date & time</span>
+      <span style="font-family:'Georgia',serif;font-size:15px;color:#2A1F14;">${dateStr}</span>
+    </td></tr>
+  </table>
+  <p style="margin:0 0 24px 0;font-size:13px;color:#6B5040;font-family:'Helvetica Neue',Arial,sans-serif;font-weight:300;text-align:center;line-height:1.7;">
+    Your rating helps make every session better than the last.
+  </p>
+  <table width="100%" cellpadding="0" cellspacing="0"><tr><td align="center">
+    <a href="${APP_URL}" style="display:inline-block;background:#8B4A2A;color:#FAF6EF;font-family:'Helvetica Neue',Arial,sans-serif;font-size:11px;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:16px 48px;border-radius:6px;">
+      Rate your session ✦
+    </a>
+  </td></tr></table>
+  <p style="margin:28px 0 0 0;font-family:'Georgia',serif;font-size:15px;color:#9A8070;font-style:italic;text-align:center;">"Every ritual deserves to be remembered."</p>
+</td></tr>
+<tr><td align="center" style="padding:28px 0 0 0;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:20px;"><tr>
+    <td style="border-bottom:0.5px solid #C9A96E;width:45%;"></td>
+    <td align="center" style="width:10%;padding-bottom:4px;"><span style="color:#C9A96E;">✦</span></td>
+    <td style="border-bottom:0.5px solid #C9A96E;width:45%;"></td>
+  </tr></table>
+  <p style="margin:0;font-size:11px;color:#9A8070;letter-spacing:1px;font-family:'Helvetica Neue',Arial,sans-serif;">Maison · Spa &nbsp;·&nbsp; Your private retreat</p>
+</td></tr>
+</table></td></tr></table></body></html>`;
+}
+
 function buildConfirmEmailHtml(s, svc){
   const dateStr = osloFormat(s.date, {weekday:'long',day:'numeric',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'});
   return `<!DOCTYPE html><html><body style="margin:0;padding:0;background:#F2EDE4;font-family:'Georgia',serif;">
@@ -1836,6 +1912,19 @@ function buildCancelEmailHtml(s, svc){
   <p style="margin:0;font-size:11px;color:#9A8070;letter-spacing:1px;font-family:'Helvetica Neue',Arial,sans-serif;">Maison · Spa &nbsp;·&nbsp; Your private retreat</p>
 </td></tr>
 </table></td></tr></table></body></html>`;
+}
+
+
+async function sendRatingReminderEmail(session){
+  const svc=state.services.find(s=>s.id===session.serviceId)||{name:session.serviceName};
+  const clientEmail=getUserEmail(session.client);
+  if(!clientEmail){console.warn('No email for client');return;}
+  const messageBody=buildRatingReminderHtml(session,svc);
+  await emailjs.send(EMAILJS_SERVICE_ID, TEMPLATE_RESPONSE, {
+    client_email: clientEmail,
+    subject:      'How was your Maison · Spa session? ✦',
+    message_body: messageBody,
+  });
 }
 
 async function sendBookingEmail(session){
