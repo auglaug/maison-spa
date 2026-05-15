@@ -1381,7 +1381,7 @@ function editTreatment(i){
       </select>
     </div>
     <div class="field"><label>Description</label><textarea id="ftDesc">${s.description||''}</textarea></div>
-    <div class="field"><label>What is needed <span style="font-weight:300;text-transform:none;letter-spacing:0;">(comma separated)</span></label><input type="text" id="ftNeeds" value="${(s.needs||[]).join(', ')}"></div>
+    <div class="field"><label>What is needed <span style="font-weight:300;text-transform:none;letter-spacing:0;">(comma separated)</span></label><input type="text" id="ftNeeds" value="${Array.isArray(s.needs)?s.needs.join(', '):(s.needs||'')}"></div>
     <div class="field"><label>Available add-ons</label>
       <div class="checkbox-list">${addonCheckboxes}</div>
     </div>
@@ -1463,7 +1463,7 @@ function editAddon(i){
       <textarea id="faDesc">${a.desc||''}</textarea>
     </div>
     <div class="field"><label>What is needed <span style="font-weight:300;text-transform:none;letter-spacing:0;">(optional, comma separated)</span></label>
-      <input type="text" id="faNeeds" value="${(a.needs||[]).join(', ')}">
+      <input type="text" id="faNeeds" value="${Array.isArray(a.needs)?a.needs.join(', '):(a.needs||'')}">
     </div>
     <div class="field">
       <label>Sub-options</label>
